@@ -1,27 +1,70 @@
-import Link from "next/link";
+import { api } from "~/trpc/server";
+import { NavAuthMenu } from "~/app/_components/nav-auth-menu";
 
-import { auth } from "~/server/auth";
-import { RegistrationForm } from "~/app/_components/registration-form";
-
-export default async function RegisterPage() {
-  const session = await auth();
+export default async function Home() {
+  const announcements = await api.announcement.list();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] px-4 text-white">
-      <h1 className="mb-8 text-4xl font-extrabold tracking-tight">
-        Register for <span className="text-[hsl(280,100%,70%)]">SIGNAL QUEST</span>
-      </h1>
+    <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+      <nav className="flex items-center justify-between px-6 py-4">
+        <span className="text-xl font-extrabold tracking-tight">
+          SIGNAL <span className="text-[hsl(280,100%,70%)]">QUEST</span>
+        </span>
+        <div className="flex items-center gap-6">
+          <a href="#about" className="font-medium hover:text-white/70">
+            About
+          </a>
+          <a href="#announcements" className="font-medium hover:text-white/70">
+            Announcements
+          </a>
+          <NavAuthMenu />
+        </div>
+      </nav>
 
-      {session ? (
-        <RegistrationForm />
-      ) : (
-        <Link
-          href="/api/auth/signin"
-          className="rounded-full bg-white/10 px-8 py-3 font-semibold transition hover:bg-white/20"
-        >
-          Sign in with Discord to register
-        </Link>
-      )}
+      <section
+        id="about"
+        className="flex min-h-[70vh] flex-col items-center justify-center gap-6 px-6 text-center"
+      >
+        <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+          SIGNAL <span className="text-[hsl(280,100%,70%)]">QUEST</span>
+        </h1>
+        <p className="max-w-2xl text-lg text-white/80">
+          SIGNAL QUEST is a hackathon for builders working across speech &
+          audio, computer vision, biomedical signals, AI/ML, wireless & IoT,
+          and sustainable tech. Form a team, pick a track, and build
+          something real.
+        </p>
+      </section>
+
+      <section id="announcements" className="px-6 py-16">
+        <h2 className="mb-8 text-center text-3xl font-extrabold tracking-tight">
+          Announcements
+        </h2>
+        <div className="mx-auto flex max-w-2xl flex-col gap-4">
+          {announcements.length === 0 ? (
+            <p className="text-center text-white/60">
+              No announcements yet — check back soon.
+            </p>
+          ) : (
+            announcements.map((announcement) => (
+              <div
+                key={announcement.id}
+                className="rounded-lg bg-white/10 px-6 py-4"
+              >
+                <div className="flex items-baseline justify-between gap-4">
+                  <h3 className="text-xl font-semibold">
+                    {announcement.title}
+                  </h3>
+                  <span className="shrink-0 text-sm text-white/50">
+                    {announcement.createdAt.toLocaleDateString()}
+                  </span>
+                </div>
+                <p className="mt-2 text-white/80">{announcement.body}</p>
+              </div>
+            ))
+          )}
+        </div>
+      </section>
     </main>
   );
 }

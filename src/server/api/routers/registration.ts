@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  adminProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "~/server/api/trpc";
 import { Track } from "../../../../generated/prisma";
 
 export const registrationRouter = createTRPCRouter({
@@ -17,13 +21,23 @@ export const registrationRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const existing = await ctx.db.registration.findUnique({
+      const existingForUser = await ctx.db.registration.findUnique({
         where: { userId: ctx.session.user.id },
       });
-      if (existing) {
+      if (existingForUser) {
         throw new TRPCError({
           code: "CONFLICT",
           message: "You are already registered for SIGNAL QUEST.",
+        });
+      }
+
+      const existingForEmail = await ctx.db.registration.findUnique({
+        where: { email: input.email },
+      });
+      if (existingForEmail) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "This email is already registered for SIGNAL QUEST.",
         });
       }
 
@@ -38,6 +52,12 @@ export const registrationRouter = createTRPCRouter({
   mine: protectedProcedure.query(({ ctx }) =>
     ctx.db.registration.findUnique({
       where: { userId: ctx.session.user.id },
+    }),
+  ),
+
+  list: adminProcedure.query(({ ctx }) =>
+    ctx.db.registration.findMany({
+      orderBy: { createdAt: "desc" },
     }),
   ),
 });

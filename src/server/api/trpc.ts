@@ -11,6 +11,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import { env } from "~/env";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
@@ -46,10 +47,19 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
   errorFormatter({ shape, error }) {
+    const { stack: _stack, ...dataWithoutStack } = shape.data;
+
     return {
       ...shape,
+      // Unexpected server errors (DB failures, bugs, etc.) shouldn't leak internal
+      // details to the client — only messages from errors we throw on purpose
+      // (TRPCErrors with an explicit code/message) are safe to show as-is.
+      message:
+        error.code === "INTERNAL_SERVER_ERROR"
+          ? "Something went wrong. Please try again."
+          : shape.message,
       data: {
-        ...shape.data,
+        ...dataWithoutStack,
         zodError:
           error.cause instanceof ZodError ? error.cause.flatten() : null,
       },
@@ -131,3 +141,25 @@ export const protectedProcedure = t.procedure
       },
     });
   });
+
+/**
+ * Admin procedure
+ *
+ * Like `protectedProcedure`, but additionally requires the signed-in user's email to be listed in
+ * the `ADMIN_EMAILS` environment variable (comma-separated).
+ */
+export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
+  const adminEmails = (env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+
+  if (
+    !ctx.session.user.email ||
+    !adminEmails.includes(ctx.session.user.email.toLowerCase())
+  ) {
+    throw new TRPCError({ code: "FORBIDDEN" });
+  }
+
+  return next({ ctx });
+});

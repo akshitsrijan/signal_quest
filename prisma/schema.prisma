@@ -89,7 +89,7 @@ model Registration {
   createdAt DateTime @default(now())
 
   fullName String
-  email    String
+  email    String  @unique
   phone    String?
   college  String?
   teamName String?
