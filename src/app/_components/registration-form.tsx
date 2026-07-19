@@ -3,16 +3,8 @@
 import { useState } from "react";
 
 import { api } from "~/trpc/react";
+import { TRACKS, TRACK_LABELS } from "~/lib/tracks";
 import { Track } from "../../../generated/prisma";
-
-const TRACK_LABELS: Record<Track, string> = {
-  SPEECH_AUDIO_AI: "Speech, Audio & AI",
-  COMPUTER_VISION: "Computer Vision",
-  BIOMEDICAL_SIGNALS: "Biomedical Signals",
-  AI_ML: "AI & ML",
-  WIRELESS_IOT: "Wireless & IoT",
-  SUSTAINABLE_TECH: "Sustainable Tech",
-};
 
 const inputClass =
   "rounded-lg bg-white/10 px-4 py-3 placeholder-white/50 outline-none focus:bg-white/20";
@@ -99,9 +91,9 @@ export function RegistrationForm() {
         value={track}
         onChange={(e) => setTrack(e.target.value as Track)}
       >
-        {Object.entries(TRACK_LABELS).map(([value, label]) => (
-          <option key={value} value={value} className="text-black">
-            {label}
+        {TRACKS.map((track) => (
+          <option key={track.id} value={track.id} className="text-black">
+            {track.label}
           </option>
         ))}
       </select>

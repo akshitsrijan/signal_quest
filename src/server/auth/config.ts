@@ -1,7 +1,11 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import DiscordProvider from "next-auth/providers/discord";
+import GitHubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
 
+import { verifyPassword } from "~/server/auth/password";
 import { db } from "~/server/db";
 
 /**
@@ -33,23 +37,48 @@ declare module "next-auth" {
 export const authConfig = {
   providers: [
     DiscordProvider,
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
+    GoogleProvider,
+    GitHubProvider,
+    CredentialsProvider({
+      name: "Email",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const email = credentials?.email;
+        const password = credentials?.password;
+        if (typeof email !== "string" || typeof password !== "string") {
+          return null;
+        }
+
+        const user = await db.user.findUnique({ where: { email } });
+        if (!user?.passwordHash) return null;
+
+        const isValid = await verifyPassword(password, user.passwordHash);
+        return isValid ? user : null;
+      },
+    }),
   ],
   adapter: PrismaAdapter(db),
+  // Credentials sign-in can't be verified against a database session on every
+  // request (there's no OAuth token to check), so NextAuth requires JWT
+  // sessions whenever a Credentials provider is configured. Made explicit
+  // here since it's easy to assume database sessions are still in play.
+  session: { strategy: "jwt" },
   callbacks: {
-    session: ({ session, user }) => ({
+     async signIn({ user }) {
+    if (!user.email) return false;
+    const allowed = await db.registeredEmail.findUnique({
+      where: { email: user.email },
+    });
+    return !!allowed;
+  },
+    session: ({ session, token }) => ({
       ...session,
       user: {
         ...session.user,
-        id: user.id,
+        id: token.sub!,
       },
     }),
   },
