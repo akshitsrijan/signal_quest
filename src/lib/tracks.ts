@@ -1,33 +1,39 @@
-import { Track } from "../../generated/prisma";
+export type Track =
+  | "SPEECH_AUDIO_AI"
+  | "COMPUTER_VISION"
+  | "BIOMEDICAL_SIGNALS"
+  | "AI_ML"
+  | "WIRELESS_IOT"
+  | "SUSTAINABLE_TECH";
 
 export const TRACKS: { id: Track; label: string; description: string }[] = [
   {
-    id: Track.SPEECH_AUDIO_AI,
+    id: "SPEECH_AUDIO_AI",
     label: "Speech, Audio & AI",
     description: "Voice interfaces, audio processing, and language models.",
   },
   {
-    id: Track.COMPUTER_VISION,
+    id: "COMPUTER_VISION",
     label: "Computer Vision",
     description: "Image and video understanding, object detection, and more.",
   },
   {
-    id: Track.BIOMEDICAL_SIGNALS,
+    id: "BIOMEDICAL_SIGNALS",
     label: "Biomedical Signals",
     description: "EEG, ECG, and other signals from the human body.",
   },
   {
-    id: Track.AI_ML,
+    id: "AI_ML",
     label: "AI & ML",
     description: "General machine learning models and applications.",
   },
   {
-    id: Track.WIRELESS_IOT,
+    id: "WIRELESS_IOT",
     label: "Wireless & IoT",
     description: "Connected devices, sensors, and wireless protocols.",
   },
   {
-    id: Track.SUSTAINABLE_TECH,
+    id: "SUSTAINABLE_TECH",
     label: "Sustainable Tech",
     description: "Hardware and software for a greener future.",
   },

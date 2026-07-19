@@ -3,6 +3,7 @@ import { TRPCError } from "@trpc/server";
 
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
+import { RegistrationStatusActions } from "~/app/_components/registration-status-actions";
 
 export default async function AdminRegistrationsPage() {
   const session = await auth();
@@ -33,13 +34,18 @@ export default async function AdminRegistrationsPage() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-white/20 text-white/60">
-                <th className="px-4 py-3">Name</th>
+                <th className="px-4 py-3">Team</th>
+                <th className="px-4 py-3">Leader</th>
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Phone</th>
                 <th className="px-4 py-3">College</th>
-                <th className="px-4 py-3">Team</th>
-                <th className="px-4 py-3">Track</th>
+                <th className="px-4 py-3">Participants</th>
+                <th className="px-4 py-3">IEEE</th>
+                <th className="px-4 py-3">Fee</th>
+                <th className="px-4 py-3">Proof</th>
+                <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Registered</th>
+                <th className="px-4 py-3">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -48,14 +54,40 @@ export default async function AdminRegistrationsPage() {
                   key={registration.id}
                   className="border-b border-white/10 last:border-0"
                 >
-                  <td className="px-4 py-3">{registration.fullName}</td>
+                  <td className="px-4 py-3">{registration.teamName}</td>
+                  <td className="px-4 py-3">{registration.teamLeaderName}</td>
                   <td className="px-4 py-3">{registration.email}</td>
-                  <td className="px-4 py-3">{registration.phone ?? "—"}</td>
-                  <td className="px-4 py-3">{registration.college ?? "—"}</td>
-                  <td className="px-4 py-3">{registration.teamName ?? "—"}</td>
-                  <td className="px-4 py-3">{registration.track}</td>
+                  <td className="px-4 py-3">{registration.teamLeaderPhone}</td>
+                  <td className="px-4 py-3">{registration.collegeName}</td>
+                  <td className="px-4 py-3">
+                    {registration.numParticipants} (
+                    {registration.participantNames.join(", ") || "—"})
+                  </td>
+                  <td className="px-4 py-3">
+                    {registration.ieeeMember
+                      ? `Yes${registration.ieeeMembershipId ? ` (${registration.ieeeMembershipId})` : ""}`
+                      : "No"}
+                  </td>
+                  <td className="px-4 py-3">₹{registration.entryFee}</td>
+                  <td className="px-4 py-3">
+                    <a
+                      href={registration.paymentProofUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline hover:text-white/70"
+                    >
+                      View
+                    </a>
+                  </td>
+                  <td className="px-4 py-3">{registration.status}</td>
                   <td className="px-4 py-3">
                     {registration.createdAt.toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <RegistrationStatusActions
+                      id={registration.id}
+                      status={registration.status}
+                    />
                   </td>
                 </tr>
               ))}

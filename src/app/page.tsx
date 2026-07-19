@@ -1,10 +1,21 @@
 import { api } from "~/trpc/server";
+import { auth } from "~/server/auth";
 import { NavAuthMenu } from "~/app/_components/nav-auth-menu";
 import { TRACKS } from "~/lib/tracks";
 import Image from "next/image";
 
+const STATUS_COPY = {
+  PENDING:
+    "Your registration is under review — we'll confirm once payment is verified.",
+  APPROVED: "You're registered! Welcome to SIGNAL QUEST.",
+  REJECTED:
+    "We couldn't verify your payment. Please reach out so we can sort it out.",
+} as const;
+
 export default async function Home() {
+  const session = await auth();
   const announcements = await api.announcement.list();
+  const myRegistration = session ? await api.registration.mine() : null;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
@@ -24,6 +35,16 @@ export default async function Home() {
           <NavAuthMenu />
         </div>
       </nav>
+
+      {session && (
+        <div className="px-6 pt-4">
+          <p className="mx-auto max-w-3xl rounded-lg bg-white/10 px-4 py-3 text-center text-sm">
+            {myRegistration
+              ? STATUS_COPY[myRegistration.status]
+              : "You haven't registered yet — click Register above to get started."}
+          </p>
+        </div>
+      )}
 
       <section
         id="about"

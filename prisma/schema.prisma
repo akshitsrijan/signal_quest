@@ -76,29 +76,35 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-enum Track {
-  SPEECH_AUDIO_AI
-  COMPUTER_VISION
-  BIOMEDICAL_SIGNALS
-  AI_ML
-  WIRELESS_IOT
-  SUSTAINABLE_TECH
+enum RegistrationStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 model Registration {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
 
-  fullName String
-  email    String  @unique
-  phone    String?
-  college  String?
-  teamName String?
+  teamName        String
+  teamLeaderName  String
+  email           String @unique
+  teamLeaderPhone String
+  collegeName     String
 
-  track Track
+  numParticipants  Int
+  participantNames String[]
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String @unique
+  ieeeMember       Boolean
+  ieeeMembershipId String?
+
+  entryFee        Int
+  paymentProofUrl String
+
+  status RegistrationStatus @default(PENDING)
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String? @unique
 }
 
 model Announcement {

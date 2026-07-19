@@ -33,15 +33,13 @@ export function NavAuthMenu() {
 
       {open && (
         <div className="absolute right-0 top-full z-10 mt-2 flex w-48 flex-col overflow-hidden rounded-lg bg-[#15162c] shadow-lg ring-1 ring-white/10">
-         <a
-            href={env.NEXT_PUBLIC_UNSTOP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-3 font-medium hover:bg-white/10"
-            onClick={() => setOpen(false)}
-          >
-            Register
-        </a> 
+        <Link
+          href={`/api/auth/signin?callbackUrl=${encodeURIComponent(env.NEXT_PUBLIC_REGISTRATION_FORM_URL)}`}
+          className="px-4 py-3 font-medium hover:bg-white/10"
+          onClick={() => setOpen(false)}
+        >
+          Register
+        </Link>
         <Link
             href="/api/auth/signin"
             className="px-4 py-3 font-medium hover:bg-white/10"

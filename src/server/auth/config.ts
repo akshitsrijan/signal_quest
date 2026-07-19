@@ -5,6 +5,7 @@ import DiscordProvider from "next-auth/providers/discord";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
+import { env } from "~/env";
 import { verifyPassword } from "~/server/auth/password";
 import { db } from "~/server/db";
 
@@ -67,13 +68,16 @@ export const authConfig = {
   // here since it's easy to assume database sessions are still in play.
   session: { strategy: "jwt" },
   callbacks: {
-     async signIn({ user }) {
-    if (!user.email) return false;
-    const allowed = await db.registeredEmail.findUnique({
-      where: { email: user.email },
-    });
-    return !!allowed;
-  },
+    redirect({ url, baseUrl }) {
+      if (url === env.NEXT_PUBLIC_REGISTRATION_FORM_URL) return url;
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      try {
+        if (new URL(url).origin === baseUrl) return url;
+      } catch {
+        // not a valid absolute URL, fall through to baseUrl
+      }
+      return baseUrl;
+    },
     session: ({ session, token }) => ({
       ...session,
       user: {
