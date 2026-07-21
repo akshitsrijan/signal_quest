@@ -30,7 +30,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
 client: {
-  NEXT_PUBLIC_REGISTRATION_FORM_URL: z.string().url(),
+  NEXT_PUBLIC_DISCORD_INVITE_URL: z.string().url().optional(),
 },
 
 
@@ -46,9 +46,9 @@ client: {
     AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
     AUTH_GITHUB_ID: process.env.AUTH_GITHUB_ID,
     AUTH_GITHUB_SECRET: process.env.AUTH_GITHUB_SECRET,
-    NEXT_PUBLIC_REGISTRATION_FORM_URL: process.env.NEXT_PUBLIC_REGISTRATION_FORM_URL,
     DATABASE_URL: process.env.DATABASE_URL,
     ADMIN_EMAILS: process.env.ADMIN_EMAILS,
+    NEXT_PUBLIC_DISCORD_INVITE_URL: process.env.NEXT_PUBLIC_DISCORD_INVITE_URL,
     NODE_ENV: process.env.NODE_ENV,
   },
   /**

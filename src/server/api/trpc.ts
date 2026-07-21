@@ -11,9 +11,9 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { env } from "~/env";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
+import { isAdminEmail } from "~/lib/admin";
 
 /**
  * 1. CONTEXT
@@ -149,15 +149,7 @@ export const protectedProcedure = t.procedure
  * the `ADMIN_EMAILS` environment variable (comma-separated).
  */
 export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  const adminEmails = (env.ADMIN_EMAILS ?? "")
-    .split(",")
-    .map((email) => email.trim().toLowerCase())
-    .filter(Boolean);
-
-  if (
-    !ctx.session.user.email ||
-    !adminEmails.includes(ctx.session.user.email.toLowerCase())
-  ) {
+  if (!isAdminEmail(ctx.session.user.email)) {
     throw new TRPCError({ code: "FORBIDDEN" });
   }
 

@@ -5,7 +5,6 @@ import DiscordProvider from "next-auth/providers/discord";
 import GitHubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
 
-import { env } from "~/env";
 import { verifyPassword } from "~/server/auth/password";
 import { db } from "~/server/db";
 
@@ -69,7 +68,6 @@ export const authConfig = {
   session: { strategy: "jwt" },
   callbacks: {
     redirect({ url, baseUrl }) {
-      if (url === env.NEXT_PUBLIC_REGISTRATION_FORM_URL) return url;
       if (url.startsWith("/")) return `${baseUrl}${url}`;
       try {
         if (new URL(url).origin === baseUrl) return url;
