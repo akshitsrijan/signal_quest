@@ -83,7 +83,7 @@ export const registrationRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string(),
-        status: z.enum(["PENDING", "APPROVED", "REJECTED"]),
+        status: z.enum(["PENDING", "APPROVED", "REJECTED", "ON_HOLD"]),
       }),
     )
     .mutation(({ ctx, input }) =>
@@ -91,5 +91,11 @@ export const registrationRouter = createTRPCRouter({
         where: { id: input.id },
         data: { status: input.status },
       }),
+    ),
+
+  delete: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(({ ctx, input }) =>
+      ctx.db.registration.delete({ where: { id: input.id } }),
     ),
 });

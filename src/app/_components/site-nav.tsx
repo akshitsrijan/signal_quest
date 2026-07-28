@@ -26,15 +26,19 @@ export function SiteNav({
   return (
     <nav className="sticky top-0 z-20 border-b border-white/10 bg-[#3a1076] px-6 py-4">
       <div className="flex items-center justify-between">
-        <Image
-          src="/logo_preview.png"
-          alt="SIGNAL QUEST"
-          width={800}
-          height={800}
-          quality={100}
-          className="h-16 w-auto"
-          priority
-        />
+        {/* Full page reload on purpose — clicking the logo should refresh the site. */}
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+        <a href="/">
+          <Image
+            src="/logo_preview.png"
+            alt="SIGNAL QUEST"
+            width={800}
+            height={800}
+            quality={100}
+            className="h-16 w-auto"
+            priority
+          />
+        </a>
 
         <div className="hidden items-center gap-6 md:flex">
           {NAV_LINKS.map((link) => (

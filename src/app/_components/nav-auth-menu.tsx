@@ -41,13 +41,15 @@ export function NavAuthMenu({
         <div className="absolute right-0 top-full z-10 mt-2 flex w-48 flex-col overflow-hidden rounded-lg bg-[#15162c] shadow-lg ring-1 ring-white/10">
           {isSignedIn ? (
             <>
-              <Link
-                href="/register"
-                className="px-4 py-3 font-medium hover:bg-white/10"
-                onClick={() => setOpen(false)}
-              >
-                Register
-              </Link>
+              {!isAdmin && (
+                <Link
+                  href="/register"
+                  className="px-4 py-3 font-medium hover:bg-white/10"
+                  onClick={() => setOpen(false)}
+                >
+                  Register
+                </Link>
+              )}
               {isAdmin && (
                 <Link
                   href="/admin/registrations"

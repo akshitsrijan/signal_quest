@@ -11,14 +11,15 @@ import { env } from "~/env";
 export default async function Home() {
   const session = await auth();
   const announcements = await api.announcement.list();
-  const myRegistration = session ? await api.registration.mine() : null;
   const isAdmin = isAdminEmail(session?.user.email);
+  const myRegistration =
+    session && !isAdmin ? await api.registration.mine() : null;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
       <SiteNav isSignedIn={!!session} isAdmin={isAdmin} />
 
-      {session && (
+      {session && !isAdmin && (
         <div className="px-6 pt-4">
           <p className="mx-auto max-w-3xl rounded-lg bg-white/10 px-4 py-3 text-center text-sm">
             {myRegistration

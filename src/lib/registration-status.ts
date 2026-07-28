@@ -4,4 +4,6 @@ export const REGISTRATION_STATUS_COPY = {
   APPROVED: "You're registered! Welcome to SIGNAL QUEST.",
   REJECTED:
     "We couldn't verify your payment. Please reach out so we can sort it out.",
+  ON_HOLD:
+    "Your registration is on hold — the organizers will reach out to you directly.",
 } as const;
