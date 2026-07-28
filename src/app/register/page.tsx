@@ -30,7 +30,7 @@ export default async function RegisterPage() {
         Team <span className="text-[hsl(280,100%,70%)]">Registration</span>
       </h1>
 
-      {registration ? (
+      {registration && registration.status !== "REJECTED" ? (
         <div className="w-full max-w-2xl rounded-xl bg-white/10 p-8 text-center">
           <h2 className="text-2xl font-bold">{registration.teamName}</h2>
           <p className="mt-2 text-white/80">
@@ -38,7 +38,15 @@ export default async function RegisterPage() {
           </p>
         </div>
       ) : (
-        <RegistrationForm />
+        <>
+          {registration?.status === "REJECTED" && (
+            <p className="w-full max-w-2xl rounded-xl bg-red-500/10 p-4 text-center text-red-200">
+              {REGISTRATION_STATUS_COPY.REJECTED} You can fix and resubmit
+              below.
+            </p>
+          )}
+          <RegistrationForm initial={registration ?? undefined} />
+        </>
       )}
     </main>
   );

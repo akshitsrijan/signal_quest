@@ -40,22 +40,33 @@ export const registrationRouter = createTRPCRouter({
       const existing = await ctx.db.registration.findUnique({
         where: { email },
       });
-      if (existing) {
+      if (existing && existing.status !== "REJECTED") {
         throw new TRPCError({
           code: "CONFLICT",
           message: "You've already registered a team for SIGNAL QUEST.",
         });
       }
 
-      return ctx.db.registration.create({
-        data: {
-          ...input,
-          numParticipants: input.participantNames.length,
-          entryFee: input.ieeeMember ? 350 : 500,
-          email,
-          userId: ctx.session.user.id,
-        },
-      });
+      const data = {
+        ...input,
+        numParticipants: input.participantNames.length,
+        entryFee: input.ieeeMember ? 350 : 500,
+        email,
+        userId: ctx.session.user.id,
+        status: "PENDING" as const,
+      };
+
+      // A rejected registration can be corrected and resubmitted by updating
+      // the same row (and resetting its status) rather than creating a
+      // second one, since `email` is unique.
+      if (existing) {
+        return ctx.db.registration.update({
+          where: { id: existing.id },
+          data,
+        });
+      }
+
+      return ctx.db.registration.create({ data });
     }),
 
   list: adminProcedure.query(({ ctx }) =>

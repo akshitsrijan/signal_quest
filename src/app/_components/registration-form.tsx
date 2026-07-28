@@ -29,17 +29,40 @@ function Question({
   );
 }
 
-export function RegistrationForm() {
+type RegistrationDraft = {
+  teamName: string;
+  teamLeaderName: string;
+  teamLeaderPhone: string;
+  collegeName: string;
+  participantNames: string[];
+  ieeeMember: boolean;
+  ieeeMembershipId: string | null;
+  paymentProofUrl: string;
+};
+
+export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
   const router = useRouter();
 
-  const [teamName, setTeamName] = useState("");
-  const [teamLeaderName, setTeamLeaderName] = useState("");
-  const [teamLeaderPhone, setTeamLeaderPhone] = useState("");
-  const [collegeName, setCollegeName] = useState("");
-  const [participantNames, setParticipantNames] = useState<string[]>([]);
-  const [ieeeMember, setIeeeMember] = useState<"yes" | "no" | "">("");
-  const [ieeeMembershipId, setIeeeMembershipId] = useState("");
-  const [paymentProofUrl, setPaymentProofUrl] = useState("");
+  const [teamName, setTeamName] = useState(initial?.teamName ?? "");
+  const [teamLeaderName, setTeamLeaderName] = useState(
+    initial?.teamLeaderName ?? "",
+  );
+  const [teamLeaderPhone, setTeamLeaderPhone] = useState(
+    initial?.teamLeaderPhone ?? "",
+  );
+  const [collegeName, setCollegeName] = useState(initial?.collegeName ?? "");
+  const [participantNames, setParticipantNames] = useState<string[]>(
+    initial?.participantNames ?? [],
+  );
+  const [ieeeMember, setIeeeMember] = useState<"yes" | "no" | "">(
+    initial ? (initial.ieeeMember ? "yes" : "no") : "",
+  );
+  const [ieeeMembershipId, setIeeeMembershipId] = useState(
+    initial?.ieeeMembershipId ?? "",
+  );
+  const [paymentProofUrl, setPaymentProofUrl] = useState(
+    initial?.paymentProofUrl ?? "",
+  );
 
   const register = api.registration.create.useMutation({
     onSuccess: () => router.refresh(),
@@ -124,15 +147,22 @@ export function RegistrationForm() {
       </Question>
 
       <Question label="Number of team members (excluding leader)" required>
-        <input
-          className={fieldClass}
-          type="number"
-          min={0}
-          max={3}
-          value={participantNames.length}
-          onChange={(e) => setParticipantCount(Number(e.target.value))}
-          required
-        />
+        <div className="flex gap-3">
+          {[0, 1, 2, 3].map((count) => (
+            <button
+              key={count}
+              type="button"
+              onClick={() => setParticipantCount(count)}
+              className={`h-12 w-12 rounded-lg font-semibold transition ${
+                participantNames.length === count
+                  ? "bg-[hsl(280,100%,70%)] text-black"
+                  : "bg-white/10 hover:bg-white/20"
+              }`}
+            >
+              {count}
+            </button>
+          ))}
+        </div>
       </Question>
 
       {participantNames.length > 0 && (
