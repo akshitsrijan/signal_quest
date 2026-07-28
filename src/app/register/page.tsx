@@ -45,6 +45,27 @@ export default async function RegisterPage() {
               below.
             </p>
           )}
+
+          <div className="w-full max-w-2xl rounded-xl bg-white/10 p-8 text-center">
+            <h2 className="text-2xl font-bold">Registration Details</h2>
+            <p className="mt-2 text-white/80">
+              Pay the entry fee via UPI, then paste a link to your payment
+              screenshot in the form below.
+            </p>
+            <div className="mx-auto mt-4 flex h-48 w-48 items-center justify-center rounded-lg border-2 border-dashed border-white/30 bg-white/5">
+              <p className="px-4 text-sm text-white/50">QR code coming soon</p>
+            </div>
+            <p className="mt-4 text-lg font-semibold">
+              UPI ID:{" "}
+              <span className="text-[hsl(280,100%,70%)]">
+                signalquest@upi
+              </span>
+            </p>
+            <p className="mt-1 text-xs text-white/40">
+              (placeholder — will be updated with the real QR code and UPI ID)
+            </p>
+          </div>
+
           <RegistrationForm initial={registration ?? undefined} />
         </>
       )}

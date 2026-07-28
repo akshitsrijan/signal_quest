@@ -29,8 +29,9 @@ export function SiteNav({
         <Image
           src="/logo_preview.png"
           alt="SIGNAL QUEST"
-          width={300}
-          height={300}
+          width={800}
+          height={800}
+          quality={100}
           className="h-16 w-auto"
           priority
         />
