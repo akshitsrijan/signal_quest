@@ -36,10 +36,9 @@ export function RegistrationForm() {
   const [teamLeaderName, setTeamLeaderName] = useState("");
   const [teamLeaderPhone, setTeamLeaderPhone] = useState("");
   const [collegeName, setCollegeName] = useState("");
-  const [participantNames, setParticipantNames] = useState<string[]>([""]);
+  const [participantNames, setParticipantNames] = useState<string[]>([]);
   const [ieeeMember, setIeeeMember] = useState<"yes" | "no" | "">("");
   const [ieeeMembershipId, setIeeeMembershipId] = useState("");
-  const [entryFee, setEntryFee] = useState("");
   const [paymentProofUrl, setPaymentProofUrl] = useState("");
 
   const register = api.registration.create.useMutation({
@@ -47,7 +46,7 @@ export function RegistrationForm() {
   });
 
   const setParticipantCount = (count: number) => {
-    const clamped = Math.max(1, Math.min(10, count || 1));
+    const clamped = Math.max(0, Math.min(3, count || 0));
     setParticipantNames((prev) => {
       const next = prev.slice(0, clamped);
       while (next.length < clamped) next.push("");
@@ -77,14 +76,12 @@ export function RegistrationForm() {
           teamLeaderName,
           teamLeaderPhone,
           collegeName,
-          numParticipants: participantNames.length,
           participantNames: participantNames
             .map((name) => name.trim())
             .filter(Boolean),
           ieeeMember: ieeeMember === "yes",
           ieeeMembershipId:
             ieeeMember === "yes" ? ieeeMembershipId || undefined : undefined,
-          entryFee: Number(entryFee),
           paymentProofUrl,
         });
       }}
@@ -126,36 +123,38 @@ export function RegistrationForm() {
         />
       </Question>
 
-      <Question label="Number of participants" required>
+      <Question label="Number of team members (excluding leader)" required>
         <input
           className={fieldClass}
           type="number"
-          min={1}
-          max={10}
+          min={0}
+          max={3}
           value={participantNames.length}
           onChange={(e) => setParticipantCount(Number(e.target.value))}
           required
         />
       </Question>
 
-      <Question label="Participant names" required>
-        <div className="flex flex-col gap-2">
-          {participantNames.map((name, i) => (
-            <input
-              key={i}
-              className={fieldClass}
-              placeholder={`Participant ${i + 1}`}
-              value={name}
-              onChange={(e) =>
-                setParticipantNames((prev) =>
-                  prev.map((n, idx) => (idx === i ? e.target.value : n)),
-                )
-              }
-              required
-            />
-          ))}
-        </div>
-      </Question>
+      {participantNames.length > 0 && (
+        <Question label="Team member names" required>
+          <div className="flex flex-col gap-2">
+            {participantNames.map((name, i) => (
+              <input
+                key={i}
+                className={fieldClass}
+                placeholder={`Team member ${i + 1}`}
+                value={name}
+                onChange={(e) =>
+                  setParticipantNames((prev) =>
+                    prev.map((n, idx) => (idx === i ? e.target.value : n)),
+                  )
+                }
+                required
+              />
+            ))}
+          </div>
+        </Question>
+      )}
 
       <Question label="Are you an IEEE member?" required>
         <div className="flex gap-6">
@@ -191,16 +190,14 @@ export function RegistrationForm() {
         </Question>
       )}
 
-      <Question label="Entry fee paid (₹)" required>
-        <input
-          className={fieldClass}
-          type="number"
-          min={0}
-          value={entryFee}
-          onChange={(e) => setEntryFee(e.target.value)}
-          required
-        />
-      </Question>
+      {ieeeMember !== "" && (
+        <Question label="Entry fee">
+          <p className="text-white/80">
+            ₹{ieeeMember === "yes" ? 350 : 500} (fixed
+            {ieeeMember === "yes" ? " for IEEE members" : " for non-IEEE members"})
+          </p>
+        </Question>
+      )}
 
       <Question label="Payment proof link" required>
         <input

@@ -22,11 +22,9 @@ export const registrationRouter = createTRPCRouter({
         teamLeaderName: z.string().min(1),
         teamLeaderPhone: z.string().min(1),
         collegeName: z.string().min(1),
-        numParticipants: z.number().int().min(1).max(10),
-        participantNames: z.array(z.string().min(1)).min(1),
+        participantNames: z.array(z.string().min(1)).max(3),
         ieeeMember: z.boolean(),
         ieeeMembershipId: z.string().min(1).optional(),
-        entryFee: z.number().int().min(0),
         paymentProofUrl: z.string().url(),
       }),
     )
@@ -52,6 +50,8 @@ export const registrationRouter = createTRPCRouter({
       return ctx.db.registration.create({
         data: {
           ...input,
+          numParticipants: input.participantNames.length,
+          entryFee: input.ieeeMember ? 350 : 500,
           email,
           userId: ctx.session.user.id,
         },
