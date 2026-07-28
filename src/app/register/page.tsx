@@ -4,6 +4,7 @@ import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import { RegistrationForm } from "~/app/_components/registration-form";
 import { REGISTRATION_STATUS_COPY } from "~/lib/registration-status";
+import { isAdminEmail } from "~/lib/admin";
 
 export default async function RegisterPage() {
   const session = await auth();
@@ -23,12 +24,25 @@ export default async function RegisterPage() {
   }
 
   const registration = await api.registration.mine();
+  const isAdmin = isAdminEmail(session.user.email);
 
   return (
     <main className="flex min-h-screen flex-col items-center gap-8 bg-gradient-to-b from-[#2e026d] to-[#15162c] px-4 py-16 text-white">
       <h1 className="text-center text-4xl font-extrabold tracking-tight">
         Team <span className="text-[hsl(280,100%,70%)]">Registration</span>
       </h1>
+
+      {isAdmin && (
+        <div className="w-full max-w-2xl rounded-xl border border-white/20 bg-white/5 p-4 text-center">
+          <p className="text-sm text-white/70">Admin access</p>
+          <Link
+            href="/admin/registrations"
+            className="mt-2 inline-block rounded-full bg-white/10 px-6 py-2 font-semibold transition hover:bg-white/20"
+          >
+            Validate registrations
+          </Link>
+        </div>
+      )}
 
       {registration && registration.status !== "REJECTED" ? (
         <div className="w-full max-w-2xl rounded-xl bg-white/10 p-8 text-center">

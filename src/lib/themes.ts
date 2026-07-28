@@ -4,7 +4,9 @@ export type Theme =
   | "BIOMEDICAL_SIGNALS"
   | "AI_ML"
   | "WIRELESS_IOT"
-  | "SUSTAINABLE_TECH";
+  | "SUSTAINABLE_TECH"
+  | "OPEN_INNOVATION"
+  | "EMBEDDED_SYSTEMS";
 
 export const THEMES: { id: Theme; label: string; description: string }[] = [
   {
@@ -36,6 +38,16 @@ export const THEMES: { id: Theme; label: string; description: string }[] = [
     id: "SUSTAINABLE_TECH",
     label: "Sustainable Tech",
     description: "Hardware and software for a greener future.",
+  },
+  {
+    id: "OPEN_INNOVATION",
+    label: "Open Innovation",
+    description: "Anything goes — bring an idea that doesn't fit a box.",
+  },
+  {
+    id: "EMBEDDED_SYSTEMS",
+    label: "Embedded Systems",
+    description: "Firmware, microcontrollers, and hardware-software co-design.",
   },
 ];
 

@@ -11,8 +11,6 @@ export const env = createEnv({
       process.env.NODE_ENV === "production"
         ? z.string()
         : z.string().optional(),
-    AUTH_DISCORD_ID: z.string(),
-    AUTH_DISCORD_SECRET: z.string(),
     AUTH_GOOGLE_ID: z.string().optional(),
     AUTH_GOOGLE_SECRET: z.string().optional(),
     AUTH_GITHUB_ID: z.string().optional(),
@@ -40,8 +38,6 @@ client: {
    */
   runtimeEnv: {
     AUTH_SECRET: process.env.AUTH_SECRET,
-    AUTH_DISCORD_ID: process.env.AUTH_DISCORD_ID,
-    AUTH_DISCORD_SECRET: process.env.AUTH_DISCORD_SECRET,
     AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
     AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
     AUTH_GITHUB_ID: process.env.AUTH_GITHUB_ID,

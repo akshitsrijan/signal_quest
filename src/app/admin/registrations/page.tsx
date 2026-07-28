@@ -16,7 +16,7 @@ export default async function AdminRegistrationsPage() {
           href="/api/auth/signin"
           className="rounded-full bg-white/10 px-8 py-3 font-semibold transition hover:bg-white/20"
         >
-          Sign in with Discord
+          Sign in
         </Link>
       </main>
     );
