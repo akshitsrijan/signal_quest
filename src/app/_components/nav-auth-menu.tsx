@@ -78,7 +78,7 @@ export function NavAuthMenu({
                 Register
               </Link>
               <Link
-                href="/api/auth/signin"
+                href="/api/auth/signin?callbackUrl=%2Fregister"
                 className="px-4 py-3 font-medium hover:bg-white/10"
                 onClick={() => setOpen(false)}
               >

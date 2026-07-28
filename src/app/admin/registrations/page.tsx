@@ -4,6 +4,16 @@ import { TRPCError } from "@trpc/server";
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import { RegistrationStatusActions } from "~/app/_components/registration-status-actions";
+import { THEMES, THEME_LABELS, type Theme } from "~/lib/themes";
+
+function StatCard({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-lg bg-white/10 px-4 py-3">
+      <p className="text-sm text-white/60">{label}</p>
+      <p className="text-2xl font-bold">{value}</p>
+    </div>
+  );
+}
 
 export default async function AdminRegistrationsPage() {
   const session = await auth();
@@ -25,11 +35,55 @@ export default async function AdminRegistrationsPage() {
   try {
     const registrations = await api.registration.list();
 
+    const statusCounts = { PENDING: 0, APPROVED: 0, REJECTED: 0 };
+    const themeCounts = Object.fromEntries(
+      THEMES.map((theme) => [theme.id, 0]),
+    ) as Record<Theme, number>;
+    let unspecifiedTheme = 0;
+    let totalParticipants = 0;
+
+    for (const registration of registrations) {
+      statusCounts[registration.status]++;
+      totalParticipants += registration.numParticipants + 1;
+      if (registration.theme) {
+        themeCounts[registration.theme]++;
+      } else {
+        unspecifiedTheme++;
+      }
+    }
+
     return (
       <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] px-6 py-12 text-white">
         <h1 className="mb-6 text-3xl font-extrabold tracking-tight">
           Registrations ({registrations.length})
         </h1>
+
+        <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+          <StatCard label="Total teams" value={registrations.length} />
+          <StatCard label="Pending" value={statusCounts.PENDING} />
+          <StatCard label="Approved" value={statusCounts.APPROVED} />
+          <StatCard label="Rejected" value={statusCounts.REJECTED} />
+          <StatCard label="Total participants" value={totalParticipants} />
+        </div>
+
+        <div className="mb-6 rounded-lg bg-white/10 p-6">
+          <h2 className="mb-4 text-lg font-semibold">Teams by theme</h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {THEMES.map((theme) => (
+              <div key={theme.id} className="rounded-lg bg-white/5 px-4 py-3">
+                <p className="text-sm text-white/60">{theme.label}</p>
+                <p className="text-xl font-bold">{themeCounts[theme.id]}</p>
+              </div>
+            ))}
+            {unspecifiedTheme > 0 && (
+              <div className="rounded-lg bg-white/5 px-4 py-3">
+                <p className="text-sm text-white/60">Unspecified</p>
+                <p className="text-xl font-bold">{unspecifiedTheme}</p>
+              </div>
+            )}
+          </div>
+        </div>
+
         <div className="overflow-x-auto rounded-lg bg-white/10">
           <table className="w-full text-left text-sm">
             <thead>
@@ -39,6 +93,7 @@ export default async function AdminRegistrationsPage() {
                 <th className="px-4 py-3">Email</th>
                 <th className="px-4 py-3">Phone</th>
                 <th className="px-4 py-3">College</th>
+                <th className="px-4 py-3">Theme</th>
                 <th className="px-4 py-3">Participants</th>
                 <th className="px-4 py-3">IEEE</th>
                 <th className="px-4 py-3">Fee</th>
@@ -59,6 +114,11 @@ export default async function AdminRegistrationsPage() {
                   <td className="px-4 py-3">{registration.email}</td>
                   <td className="px-4 py-3">{registration.teamLeaderPhone}</td>
                   <td className="px-4 py-3">{registration.collegeName}</td>
+                  <td className="px-4 py-3">
+                    {registration.theme
+                      ? THEME_LABELS[registration.theme]
+                      : "—"}
+                  </td>
                   <td className="px-4 py-3">
                     {registration.numParticipants} (
                     {registration.participantNames.join(", ") || "—"})

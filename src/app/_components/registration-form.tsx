@@ -5,6 +5,7 @@ import { type ReactNode, useState } from "react";
 
 import { api } from "~/trpc/react";
 import { REGISTRATION_STATUS_COPY } from "~/lib/registration-status";
+import { THEMES, type Theme } from "~/lib/themes";
 
 const fieldClass =
   "w-full rounded-lg bg-white/10 px-4 py-3 text-white placeholder-white/40 outline-none focus:bg-white/20";
@@ -37,6 +38,7 @@ type RegistrationDraft = {
   participantNames: string[];
   ieeeMember: boolean;
   ieeeMembershipId: string | null;
+  theme: Theme | null;
   paymentProofUrl: string;
 };
 
@@ -51,6 +53,7 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
     initial?.teamLeaderPhone ?? "",
   );
   const [collegeName, setCollegeName] = useState(initial?.collegeName ?? "");
+  const [theme, setTheme] = useState<Theme | "">(initial?.theme ?? "");
   const [participantNames, setParticipantNames] = useState<string[]>(
     initial?.participantNames ?? [],
   );
@@ -93,7 +96,7 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
       className="flex w-full max-w-2xl flex-col gap-4"
       onSubmit={(e) => {
         e.preventDefault();
-        if (ieeeMember === "") return;
+        if (ieeeMember === "" || theme === "") return;
         register.mutate({
           teamName,
           teamLeaderName,
@@ -105,6 +108,7 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
           ieeeMember: ieeeMember === "yes",
           ieeeMembershipId:
             ieeeMember === "yes" ? ieeeMembershipId || undefined : undefined,
+          theme,
           paymentProofUrl,
         });
       }}
@@ -144,6 +148,24 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
           onChange={(e) => setCollegeName(e.target.value)}
           required
         />
+      </Question>
+
+      <Question label="Theme" required>
+        <select
+          className={fieldClass}
+          value={theme}
+          onChange={(e) => setTheme(e.target.value as Theme)}
+          required
+        >
+          <option value="" disabled>
+            Select a theme
+          </option>
+          {THEMES.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.label}
+            </option>
+          ))}
+        </select>
       </Question>
 
       <Question label="Number of team members (excluding leader)" required>

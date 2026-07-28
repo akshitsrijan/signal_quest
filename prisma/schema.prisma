@@ -82,6 +82,17 @@ enum RegistrationStatus {
   REJECTED
 }
 
+enum RegistrationTheme {
+  SPEECH_AUDIO_AI
+  COMPUTER_VISION
+  BIOMEDICAL_SIGNALS
+  AI_ML
+  WIRELESS_IOT
+  SUSTAINABLE_TECH
+  OPEN_INNOVATION
+  EMBEDDED_SYSTEMS
+}
+
 model Registration {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
@@ -100,6 +111,10 @@ model Registration {
 
   entryFee        Int
   paymentProofUrl String
+
+  // Nullable because registrations created before theme selection was
+  // added don't have one; the form requires it for all new submissions.
+  theme RegistrationTheme?
 
   status RegistrationStatus @default(PENDING)
 

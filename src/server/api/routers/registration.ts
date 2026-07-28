@@ -6,6 +6,9 @@ import {
   createTRPCRouter,
   protectedProcedure,
 } from "~/server/api/trpc";
+import { THEMES, type Theme } from "~/lib/themes";
+
+const themeIds = THEMES.map((theme) => theme.id) as [Theme, ...Theme[]];
 
 export const registrationRouter = createTRPCRouter({
   mine: protectedProcedure.query(({ ctx }) => {
@@ -25,6 +28,7 @@ export const registrationRouter = createTRPCRouter({
         participantNames: z.array(z.string().min(1)).max(3),
         ieeeMember: z.boolean(),
         ieeeMembershipId: z.string().min(1).optional(),
+        theme: z.enum(themeIds),
         paymentProofUrl: z.string().url(),
       }),
     )
