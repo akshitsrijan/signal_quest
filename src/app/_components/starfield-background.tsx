@@ -217,7 +217,7 @@ export function StarfieldBackground() {
       // Rare pixel-art easter eggs.
       if (!reduceMotion && time > nextEggAt && eggs.length < MAX_EGGS_ON_SCREEN) {
         const key = EGG_KEYS[Math.floor(Math.random() * EGG_KEYS.length)]!;
-        eggs.push(spawnDrifter(width, height, key, 0.1));
+        eggs.push(spawnDrifter(width, height, key, 0.05));
         nextEggAt =
           time + EGG_SPAWN_MIN_MS + Math.random() * (EGG_SPAWN_MAX_MS - EGG_SPAWN_MIN_MS);
       }
