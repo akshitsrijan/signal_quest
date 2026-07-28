@@ -16,6 +16,7 @@ export const env = createEnv({
     AUTH_GITHUB_ID: z.string().optional(),
     AUTH_GITHUB_SECRET: z.string().optional(),
     DATABASE_URL: z.string().url(),
+    DIRECT_URL: z.string().url().optional(),
     ADMIN_EMAILS: z.string().optional(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -43,6 +44,7 @@ client: {
     AUTH_GITHUB_ID: process.env.AUTH_GITHUB_ID,
     AUTH_GITHUB_SECRET: process.env.AUTH_GITHUB_SECRET,
     DATABASE_URL: process.env.DATABASE_URL,
+    DIRECT_URL: process.env.DIRECT_URL,
     ADMIN_EMAILS: process.env.ADMIN_EMAILS,
     NEXT_PUBLIC_DISCORD_INVITE_URL: process.env.NEXT_PUBLIC_DISCORD_INVITE_URL,
     NODE_ENV: process.env.NODE_ENV,
