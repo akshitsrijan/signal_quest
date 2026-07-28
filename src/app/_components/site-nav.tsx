@@ -7,7 +7,7 @@ import { NavAuthMenu } from "~/app/_components/nav-auth-menu";
 
 const NAV_LINKS = [
   { href: "#about", label: "About" },
-  { href: "#tracks", label: "Tracks" },
+  { href: "#themes", label: "Themes" },
   { href: "#timeline", label: "Timeline" },
   { href: "#announcements", label: "Announcements" },
   { href: "#join-us", label: "Join Us" },

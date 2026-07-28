@@ -1,4 +1,4 @@
-export type Track =
+export type Theme =
   | "SPEECH_AUDIO_AI"
   | "COMPUTER_VISION"
   | "BIOMEDICAL_SIGNALS"
@@ -6,7 +6,7 @@ export type Track =
   | "WIRELESS_IOT"
   | "SUSTAINABLE_TECH";
 
-export const TRACKS: { id: Track; label: string; description: string }[] = [
+export const THEMES: { id: Theme; label: string; description: string }[] = [
   {
     id: "SPEECH_AUDIO_AI",
     label: "Speech, Audio & AI",
@@ -39,6 +39,6 @@ export const TRACKS: { id: Track; label: string; description: string }[] = [
   },
 ];
 
-export const TRACK_LABELS = Object.fromEntries(
-  TRACKS.map((track) => [track.id, track.label]),
-) as Record<Track, string>;
+export const THEME_LABELS = Object.fromEntries(
+  THEMES.map((theme) => [theme.id, theme.label]),
+) as Record<Theme, string>;

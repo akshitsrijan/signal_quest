@@ -1,7 +1,7 @@
 import { api } from "~/trpc/server";
 import { auth } from "~/server/auth";
 import { SiteNav } from "~/app/_components/site-nav";
-import { TRACKS } from "~/lib/tracks";
+import { THEMES } from "~/lib/themes";
 import { REGISTRATION_STATUS_COPY } from "~/lib/registration-status";
 import { isAdminEmail } from "~/lib/admin";
 import { TIMELINE } from "~/lib/timeline";
@@ -38,23 +38,38 @@ export default async function Home() {
         <p className="max-w-2xl text-lg text-white/80">
           SIGNAL QUEST is a hackathon for builders working across speech &
           audio, computer vision, biomedical signals, AI/ML, wireless & IoT,
-          and sustainable tech. Form a team, pick a track, and build
+          and sustainable tech. Form a team, pick a theme, and build
           something real.
         </p>
       </section>
 
-      <section id="tracks" className="px-6 py-16">
+      <section id="themes" className="px-6 py-16">
         <h2 className="mb-8 text-center text-3xl font-extrabold tracking-tight">
-          Tracks
+          Themes
         </h2>
         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {TRACKS.map((track) => (
-            <div key={track.id} className="rounded-lg bg-white/10 px-6 py-4">
-              <h3 className="text-xl font-semibold">{track.label}</h3>
-              <p className="mt-2 text-white/80">{track.description}</p>
+          {THEMES.map((theme) => (
+            <div key={theme.id} className="rounded-lg bg-white/10 px-6 py-4">
+              <h3 className="text-xl font-semibold">{theme.label}</h3>
+              <p className="mt-2 text-white/80">{theme.description}</p>
             </div>
           ))}
         </div>
+      </section>
+
+      <section
+        id="prize-pool"
+        className="flex flex-col items-center gap-2 px-6 py-16 text-center"
+      >
+        <h2 className="text-3xl font-extrabold tracking-tight">
+          Prize Pool
+        </h2>
+        <p className="text-5xl font-extrabold text-[hsl(280,100%,70%)]">
+          ₹14,000
+        </p>
+        <p className="max-w-2xl text-white/80">
+          Up for grabs across all themes at SIGNAL QUEST.
+        </p>
       </section>
 
       <section id="timeline" className="px-6 py-16">
