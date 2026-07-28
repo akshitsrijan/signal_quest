@@ -1,4 +1,5 @@
 import { accountRouter } from "~/server/api/routers/account";
+import { adminRouter } from "~/server/api/routers/admin";
 import { announcementRouter } from "~/server/api/routers/announcement";
 import { postRouter } from "~/server/api/routers/post";
 import { registrationRouter } from "~/server/api/routers/registration";
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   registration: registrationRouter,
   announcement: announcementRouter,
   account: accountRouter,
+  admin: adminRouter,
 });
 
 // export type definition of API

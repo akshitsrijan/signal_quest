@@ -59,9 +59,17 @@ export default async function AdminRegistrationsPage() {
 
     return (
       <main className="min-h-screen bg-gradient-to-b from-[#2e026d] to-[#15162c] px-6 py-12 text-white">
-        <h1 className="mb-6 text-3xl font-extrabold tracking-tight">
-          Registrations ({registrations.length})
-        </h1>
+        <div className="mb-6 flex items-center justify-between">
+          <h1 className="text-3xl font-extrabold tracking-tight">
+            Registrations ({registrations.length})
+          </h1>
+          <Link
+            href="/admin/admins"
+            className="rounded-full bg-white/10 px-5 py-2 text-sm font-semibold transition hover:bg-white/20"
+          >
+            Manage Admins
+          </Link>
+        </div>
 
         <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           <StatCard label="Total teams" value={registrations.length} />

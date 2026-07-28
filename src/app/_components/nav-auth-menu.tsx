@@ -51,13 +51,22 @@ export function NavAuthMenu({
                 </Link>
               )}
               {isAdmin && (
-                <Link
-                  href="/admin/registrations"
-                  className="px-4 py-3 font-medium hover:bg-white/10"
-                  onClick={() => setOpen(false)}
-                >
-                  Admin: Registrations
-                </Link>
+                <>
+                  <Link
+                    href="/admin/registrations"
+                    className="px-4 py-3 font-medium hover:bg-white/10"
+                    onClick={() => setOpen(false)}
+                  >
+                    Admin: Registrations
+                  </Link>
+                  <Link
+                    href="/admin/admins"
+                    className="px-4 py-3 font-medium hover:bg-white/10"
+                    onClick={() => setOpen(false)}
+                  >
+                    Manage Admins
+                  </Link>
+                </>
               )}
               <button
                 type="button"

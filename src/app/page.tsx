@@ -11,7 +11,7 @@ import { env } from "~/env";
 export default async function Home() {
   const session = await auth();
   const announcements = await api.announcement.list();
-  const isAdmin = isAdminEmail(session?.user.email);
+  const isAdmin = await isAdminEmail(session?.user.email);
   const myRegistration =
     session && !isAdmin ? await api.registration.mine() : null;
 

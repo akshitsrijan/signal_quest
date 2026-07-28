@@ -123,6 +123,16 @@ model Registration {
   userId String? @unique
 }
 
+// Admins granted through the in-app "Manage Admins" section, on top of the
+// bootstrap list in the ADMIN_EMAILS env var (which can't be removed here,
+// so the site can't be locked out of its own admin panel).
+model AdminEmail {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  addedBy   String?
+  createdAt DateTime @default(now())
+}
+
 model Announcement {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())

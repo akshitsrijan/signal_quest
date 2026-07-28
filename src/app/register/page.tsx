@@ -24,7 +24,7 @@ export default async function RegisterPage() {
     );
   }
 
-  if (isAdminEmail(session.user.email)) {
+  if (await isAdminEmail(session.user.email)) {
     redirect("/admin/registrations");
   }
 

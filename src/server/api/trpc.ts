@@ -146,10 +146,10 @@ export const protectedProcedure = t.procedure
  * Admin procedure
  *
  * Like `protectedProcedure`, but additionally requires the signed-in user's email to be listed in
- * the `ADMIN_EMAILS` environment variable (comma-separated).
+ * the `ADMIN_EMAILS` environment variable, or granted admin access via the Manage Admins section.
  */
-export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (!isAdminEmail(ctx.session.user.email)) {
+export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  if (!(await isAdminEmail(ctx.session.user.email))) {
     throw new TRPCError({ code: "FORBIDDEN" });
   }
 
