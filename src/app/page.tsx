@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { api } from "~/trpc/server";
 import { auth } from "~/server/auth";
 import { SiteNav } from "~/app/_components/site-nav";
@@ -182,6 +184,23 @@ export default async function Home() {
             </div>
           )}
         </section>
+
+        <footer className="flex flex-wrap items-center justify-center gap-10 border-t border-white/10 bg-[#3a1076] px-6 py-8">
+          <Image
+            src="/ieee-bangalore-section.png"
+            alt="IEEE Bangalore Section"
+            width={339}
+            height={71}
+            className="h-10 w-auto invert"
+          />
+          <Image
+            src="/ieee-sps-bangalore-chapter.png"
+            alt="IEEE Signal Processing Society — Bangalore Chapter"
+            width={246}
+            height={249}
+            className="h-16 w-auto invert"
+          />
+        </footer>
       </main>
     </>
   );
