@@ -54,7 +54,7 @@ export const registrationRouter = createTRPCRouter({
       const data = {
         ...input,
         numParticipants: input.participantNames.length,
-        entryFee: input.ieeeMember ? 350 : 500,
+        entryFee: input.ieeeMember ? 400 : 500,
         email,
         userId: ctx.session.user.id,
         status: "PENDING" as const,

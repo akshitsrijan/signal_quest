@@ -245,7 +245,7 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
       {ieeeMember !== "" && (
         <Question label="Entry fee">
           <p className="text-white/80">
-            ₹{ieeeMember === "yes" ? 350 : 500} (fixed
+            ₹{ieeeMember === "yes" ? 400 : 500} (fixed
             {ieeeMember === "yes" ? " for IEEE members" : " for non-IEEE members"})
           </p>
         </Question>

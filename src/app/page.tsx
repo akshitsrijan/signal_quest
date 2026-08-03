@@ -72,7 +72,24 @@ export default async function Home() {
             ₹14,000
           </p>
           <p className="max-w-2xl text-white/80">
-            Up for grabs across all themes at SIGNAL QUEST.
+            ₹14,000 plus goodies — up for grabs across all themes at SIGNAL
+            QUEST.
+          </p>
+        </section>
+
+        <section
+          id="registration-deadline"
+          className="flex flex-col items-center gap-2 px-6 py-16 text-center"
+        >
+          <h2 className="text-3xl font-extrabold tracking-tight">
+            Registration Deadline
+          </h2>
+          <p className="text-5xl font-extrabold text-[hsl(280,100%,70%)]">
+            September 15
+          </p>
+          <p className="max-w-2xl text-white/80">
+            Make sure your team is registered before this date to secure your
+            spot at SIGNAL QUEST.
           </p>
         </section>
 
