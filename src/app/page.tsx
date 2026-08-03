@@ -85,7 +85,7 @@ export default async function Home() {
             Registration Deadline
           </h2>
           <p className="text-5xl font-extrabold text-[hsl(280,100%,70%)]">
-            September 15
+            September 20
           </p>
           <p className="max-w-2xl text-white/80">
             Make sure your team is registered before this date to secure your
