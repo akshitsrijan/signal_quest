@@ -93,6 +93,25 @@ export default async function Home() {
           </p>
         </section>
 
+        <section
+          id="venue"
+          className="flex flex-col items-center gap-2 px-6 py-16 text-center"
+        >
+          <h2 className="text-3xl font-extrabold tracking-tight">Venue</h2>
+          <p className="max-w-2xl text-white/80">
+            Sri Nivasa Reddy Layout, AECS Layout, Marathahalli, Bengaluru,
+            Karnataka 560037
+          </p>
+          <a
+            href="https://maps.app.goo.gl/UmQ5euVyrEhyXshT6"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 rounded-full bg-[hsl(280,100%,70%)] px-8 py-3 font-semibold text-black transition hover:bg-[hsl(280,100%,65%)]"
+          >
+            Open in Google Maps
+          </a>
+        </section>
+
         <section id="timeline" className="px-6 py-16">
           <h2 className="mb-8 text-center text-3xl font-extrabold tracking-tight">
             Timeline
