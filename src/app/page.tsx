@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 import { api } from "~/trpc/server";
 import { auth } from "~/server/auth";
@@ -27,9 +28,17 @@ export default async function Home() {
         {session && !isAdmin && (
           <div className="px-6 pt-4">
             <p className="mx-auto max-w-3xl rounded-lg bg-white/10 px-4 py-3 text-center text-sm">
-              {myRegistration
-                ? REGISTRATION_STATUS_COPY[myRegistration.status]
-                : "You haven't registered yet — click Register above to get started."}
+              {myRegistration ? (
+                REGISTRATION_STATUS_COPY[myRegistration.status]
+              ) : (
+                <>
+                  You haven&apos;t registered yet —{" "}
+                  <Link href="/register" className="underline hover:text-white/70">
+                    click Register
+                  </Link>{" "}
+                  to get started.
+                </>
+              )}
             </p>
           </div>
         )}
@@ -74,6 +83,21 @@ export default async function Home() {
           <p className="max-w-2xl text-white/80">
             ₹14,000 plus goodies — up for grabs across all themes at SIGNAL
             QUEST.
+          </p>
+        </section>
+
+        <section
+          id="event-date"
+          className="flex flex-col items-center gap-2 px-6 py-16 text-center"
+        >
+          <h2 className="text-3xl font-extrabold tracking-tight">
+            Event Date
+          </h2>
+          <p className="text-5xl font-extrabold text-[hsl(280,100%,70%)]">
+            September 26, 2026
+          </p>
+          <p className="max-w-2xl text-white/80">
+            Mark your calendars — SIGNAL QUEST takes place on this date.
           </p>
         </section>
 
@@ -235,6 +259,13 @@ export default async function Home() {
             width={246}
             height={249}
             className="h-16 w-auto invert"
+          />
+          <Image
+            src="/images-white.png"
+            alt="CMR Institute of Technology"
+            width={2394}
+            height={1034}
+            className="h-16 w-auto"
           />
         </footer>
       </main>

@@ -8,6 +8,7 @@ import { NavAuthMenu } from "~/app/_components/nav-auth-menu";
 const NAV_LINKS = [
   { href: "#about", label: "About" },
   { href: "#themes", label: "Themes" },
+  { href: "#event-date", label: "Event Date" },
   { href: "#registration-deadline", label: "Registration Deadline" },
   { href: "#venue", label: "Venue" },
   { href: "#timeline", label: "Timeline" },
@@ -43,15 +44,37 @@ export function SiteNav({
         </a>
 
         <div className="hidden items-center gap-6 md:flex">
-          {NAV_LINKS.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="font-medium hover:text-white/70"
+          <div className="group relative">
+            <button
+              type="button"
+              className="flex items-center gap-1 font-medium hover:text-white/70"
             >
-              {link.label}
-            </a>
-          ))}
+              Sections
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                className="transition group-hover:rotate-180"
+              >
+                <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+
+            <div className="invisible absolute left-0 top-full z-10 flex w-56 -translate-y-1 flex-col overflow-hidden rounded-lg bg-[#15162c] opacity-0 shadow-lg ring-1 ring-white/10 transition group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+              {NAV_LINKS.map((link) => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="px-4 py-3 font-medium hover:bg-white/10"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          </div>
           <NavAuthMenu isSignedIn={isSignedIn} isAdmin={isAdmin} />
         </div>
 
