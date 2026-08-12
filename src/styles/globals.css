@@ -12,3 +12,67 @@
     0 2px 10px rgb(0 0 0 / 70%),
     0 1px 3px rgb(0 0 0 / 90%);
 }
+
+/* Loops a 4x-repeated logo track left -> right; the copies are identical
+   so the jump from -25% back to 0% is seamless. 4 copies (not 2) keep
+   enough tiled content ahead of the visible window on wide containers —
+   with only 2, the track ran out of content before a full cycle and a
+   gap opened up (see CO_ORGANIZER_TRACK_REPEATS in page.tsx). */
+@keyframes marquee {
+  from {
+    transform: translateX(-25%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
+/* BootSequence's loading bar. Duration is set inline (BAR_MS) so the JS
+   fade timing and this animation stay in sync. */
+@keyframes loading-bar {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.animate-loading-bar {
+  animation-name: loading-bar;
+  animation-timing-function: ease-out;
+  animation-fill-mode: both;
+}
+
+/* Route-level loading.tsx: an indeterminate sliding highlight, since real
+   load time isn't known up front (Next.js unmounts this the instant the
+   route is ready, so a fixed-duration fill like the boot bar doesn't fit). */
+@keyframes loading-sweep {
+  0% {
+    left: -40%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.animate-loading-sweep {
+  animation: loading-sweep 1.1s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-loading-sweep {
+    animation: none;
+    left: 30%;
+  }
+}

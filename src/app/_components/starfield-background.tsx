@@ -17,7 +17,14 @@ import {
 // stay in the outer 20% band on each edge so the center 60% of the
 // viewport — where page content sits — stays clear.
 
-type Star = { x: number; y: number; size: 1 | 2; phase: number; speed: number };
+type Star = {
+  x: number;
+  y: number;
+  size: 1 | 2;
+  phase: number;
+  speed: number;
+  drift: number;
+};
 type Comet = { x: number; y: number; vx: number; vy: number; life: number; maxLife: number };
 type Bit = { x: number; y: number; bit: 0 | 1; life: number };
 
@@ -88,17 +95,18 @@ function spawnDrifter(
   };
 }
 
-function drifterScreenPos(d: Drifter, width: number, height: number) {
+function drifterScreenPos(d: Drifter, width: number, height: number, wobble = 0) {
   const band = bandThickness(width, height, d.lane);
+  const cross = d.cross + wobble;
   switch (d.lane) {
     case "top":
-      return { x: d.pos, y: d.cross };
+      return { x: d.pos, y: cross };
     case "bottom":
-      return { x: d.pos, y: height - band + d.cross };
+      return { x: d.pos, y: height - band + cross };
     case "left":
-      return { x: d.cross, y: d.pos };
+      return { x: cross, y: d.pos };
     case "right":
-      return { x: width - band + d.cross, y: d.pos };
+      return { x: width - band + cross, y: d.pos };
   }
 }
 
@@ -121,6 +129,21 @@ export function StarfieldBackground() {
       "(prefers-reduced-motion: reduce)",
     ).matches;
 
+    // Arcade-cabinet CRT scanlines — a small repeating tile is cheap to
+    // stamp across the whole canvas with one fillRect per frame.
+    const scanlineTile = document.createElement("canvas");
+    scanlineTile.width = 1;
+    scanlineTile.height = 3;
+    const scanlineTileCtx = scanlineTile.getContext("2d");
+    let scanlinePattern: CanvasPattern | null = null;
+    if (scanlineTileCtx) {
+      scanlineTileCtx.fillStyle = "rgba(12,4,24,0.4)";
+      scanlineTileCtx.fillRect(0, 0, 1, 1);
+      scanlinePattern = ctx.createPattern(scanlineTile, "repeat");
+    }
+
+    let vignette: CanvasGradient | null = null;
+
     let width = 0;
     let height = 0;
 
@@ -134,17 +157,32 @@ export function StarfieldBackground() {
       canvas.style.height = `${height}px`;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.imageSmoothingEnabled = false;
+
+      vignette = ctx.createRadialGradient(
+        width / 2,
+        height / 2,
+        Math.min(width, height) * 0.35,
+        width / 2,
+        height / 2,
+        Math.max(width, height) * 0.75,
+      );
+      vignette.addColorStop(0, "rgba(10,4,20,0)");
+      vignette.addColorStop(1, "rgba(10,4,20,0.6)");
     };
     resize();
     window.addEventListener("resize", resize);
 
-    const stars: Star[] = Array.from({ length: STAR_COUNT }, () => ({
-      x: Math.random() * width,
-      y: Math.random() * height,
-      size: Math.random() < 0.15 ? 2 : 1,
-      phase: Math.random() * Math.PI * 2,
-      speed: 0.001 + Math.random() * 0.0015,
-    }));
+    const stars: Star[] = Array.from({ length: STAR_COUNT }, () => {
+      const size: 1 | 2 = Math.random() < 0.15 ? 2 : 1;
+      return {
+        x: Math.random() * width,
+        y: Math.random() * height,
+        size,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.001 + Math.random() * 0.0015,
+        drift: (size === 2 ? 0.018 : 0.008) + Math.random() * 0.01,
+      };
+    });
 
     const ambient: Drifter[] = Array.from({ length: AMBIENT_COUNT }, (_, i) =>
       spawnDrifter(width, height, i % 3 === 0 ? "planet" : "asteroid", 0.15),
@@ -173,11 +211,21 @@ export function StarfieldBackground() {
       ctx.fillStyle = "#000000";
       ctx.fillRect(0, 0, width, height);
 
-      // Stars — subtle independent twinkle, static positions (loops forever).
+      // Stars — independent twinkle plus a slow parallax drift (bigger/
+      // closer stars drift faster), like flying through a field of them.
       for (const star of stars) {
+        if (!reduceMotion) {
+          star.x -= star.drift * 16;
+          if (star.x < -2) star.x = width + 2;
+        }
         const t = reduceMotion ? 0 : time;
         const b = 0.55 + 0.45 * Math.sin(t * star.speed + star.phase);
-        ctx.fillStyle = `rgba(255,255,255,${Math.max(0.15, b).toFixed(2)})`;
+        const alpha = Math.max(0.15, b);
+        if (star.size === 2) {
+          ctx.fillStyle = `rgba(200,220,255,${(alpha * 0.25).toFixed(2)})`;
+          ctx.fillRect(Math.round(star.x) - 1, Math.round(star.y) - 1, 4, 4);
+        }
+        ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(2)})`;
         ctx.fillRect(Math.round(star.x), Math.round(star.y), star.size, star.size);
       }
 
@@ -195,22 +243,39 @@ export function StarfieldBackground() {
           const tx = comet.x - comet.vx * i * 2.2;
           const ty = comet.y - comet.vy * i * 2.2;
           const alpha = 1 - i / 6;
-          ctx.fillStyle = i === 0 ? "#ffffff" : `rgba(168,232,255,${alpha.toFixed(2)})`;
-          ctx.fillRect(Math.round(tx), Math.round(ty), 2, 2);
+          if (i === 0) {
+            ctx.save();
+            ctx.shadowColor = "#a8e8ff";
+            ctx.shadowBlur = 6;
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(Math.round(tx), Math.round(ty), 2, 2);
+            ctx.restore();
+          } else {
+            ctx.fillStyle = `rgba(168,232,255,${alpha.toFixed(2)})`;
+            ctx.fillRect(Math.round(tx), Math.round(ty), 2, 2);
+          }
         }
       }
 
       // Ambient asteroids + planets, always drifting in the outer bands.
+      // A little sinusoidal wobble + speed jitter (seeded by each drifter's
+      // own phase) keeps them from reading as a conveyor belt.
       for (const d of ambient) {
-        if (!reduceMotion) d.pos += d.speed * 16;
+        if (!reduceMotion) {
+          const jitter = 1 + 0.2 * Math.sin(time * 0.0006 + d.phase * 3);
+          d.pos += d.speed * jitter * 16;
+        }
         if (isOffscreen(d, width, height)) {
           Object.assign(d, spawnDrifter(width, height, d.kind, 0.15));
         }
-        const { x, y } = drifterScreenPos(d, width, height);
+        const wobble = reduceMotion
+          ? 0
+          : Math.sin(time * 0.0011 + d.phase) * 3 * d.scale;
+        const { x, y } = drifterScreenPos(d, width, height, wobble);
         if (d.kind === "planet") {
           drawPlanet(ctx, x, y, d.scale, d.planetColor!, d.planetRing!);
         } else {
-          drawAsteroid(ctx, x, y, d.scale);
+          drawAsteroid(ctx, x, y, d.scale, time, d.phase);
         }
       }
 
@@ -223,8 +288,14 @@ export function StarfieldBackground() {
       }
       eggs = eggs.filter((e) => !isOffscreen(e, width, height));
       for (const egg of eggs) {
-        if (!reduceMotion) egg.pos += egg.speed * 16;
-        const { x, y } = drifterScreenPos(egg, width, height);
+        if (!reduceMotion) {
+          const jitter = 1 + 0.15 * Math.sin(time * 0.0005 + egg.phase * 2);
+          egg.pos += egg.speed * jitter * 16;
+        }
+        const wobble = reduceMotion
+          ? 0
+          : Math.sin(time * 0.0009 + egg.phase * 1.5) * 2.5 * egg.scale;
+        const { x, y } = drifterScreenPos(egg, width, height, wobble);
         drawEgg(ctx, egg.kind as EggKey, x, y, egg.scale, time, egg.phase);
 
         // Binary transmission blips near the satellite.
@@ -239,6 +310,16 @@ export function StarfieldBackground() {
         bit.y -= 0.3;
         const alpha = 1 - bit.life / 60;
         drawBinaryGlyph(ctx, bit.bit, bit.x, bit.y, 2, "#33ff66", alpha);
+      }
+
+      // Arcade-cabinet CRT finish: scanlines + a darkened vignette.
+      if (scanlinePattern) {
+        ctx.fillStyle = scanlinePattern;
+        ctx.fillRect(0, 0, width, height);
+      }
+      if (vignette) {
+        ctx.fillStyle = vignette;
+        ctx.fillRect(0, 0, width, height);
       }
 
       animId = requestAnimationFrame(draw);

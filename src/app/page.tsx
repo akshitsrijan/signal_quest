@@ -8,9 +8,54 @@ import { StarfieldBackground } from "~/app/_components/starfield-background";
 import { THEMES } from "~/lib/themes";
 import { REGISTRATION_STATUS_COPY } from "~/lib/registration-status";
 import { isAdminEmail } from "~/lib/admin";
-import { TIMELINE } from "~/lib/timeline";
 import { CONTACTS } from "~/lib/contacts";
 import { env } from "~/env";
+
+const CO_ORGANIZER_LOGOS = [
+  {
+    src: "/ieee-bangalore-section.png",
+    alt: "IEEE Bangalore Section",
+    width: 339,
+    height: 71,
+    className: "h-10 w-auto",
+  },
+  {
+    src: "/ieee-sps-bangalore-chapter.png",
+    alt: "IEEE Signal Processing Society — Bangalore Chapter",
+    width: 246,
+    height: 249,
+    className: "h-16 w-auto",
+  },
+  {
+    src: "/CMRIT.png",
+    alt: "CMR Institute of Technology, Bengaluru",
+    width: 375,
+    height: 246,
+    className: "h-20 w-auto",
+  },
+];
+
+// Must match the -25% shift in the .animate-marquee keyframes (globals.css):
+// each of the 4 copies needs to span 1/4 of the animated track.
+const CO_ORGANIZER_TRACK_REPEATS = 4;
+
+function CoOrganizerLogo({
+  logo,
+}: {
+  logo: (typeof CO_ORGANIZER_LOGOS)[number];
+}) {
+  return (
+    <div className="flex h-24 shrink-0 items-center justify-center rounded-xl bg-white px-6 py-3 shadow-sm">
+      <Image
+        src={logo.src}
+        alt={logo.alt}
+        width={logo.width}
+        height={logo.height}
+        className={logo.className}
+      />
+    </div>
+  );
+}
 
 export default async function Home() {
   const session = await auth();
@@ -56,6 +101,27 @@ export default async function Home() {
             and sustainable tech. Form a team, pick a theme, and build something
             real.
           </p>
+        </section>
+
+        <section id="co-organizers" className="px-6 py-16 text-center">
+          <h2 className="mb-8 text-3xl font-extrabold tracking-tight">
+            Co-Organizers
+          </h2>
+          <div className="mx-auto max-w-5xl overflow-hidden">
+            <div className="animate-marquee flex w-max">
+              {Array.from({ length: CO_ORGANIZER_TRACK_REPEATS }, (_, i) => (
+                <div
+                  key={i}
+                  className="flex shrink-0 items-center gap-10 pr-10"
+                  aria-hidden={i === 0 ? undefined : true}
+                >
+                  {CO_ORGANIZER_LOGOS.map((logo) => (
+                    <CoOrganizerLogo key={logo.alt} logo={logo} />
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
         </section>
 
         <section id="themes" className="px-6 py-16">
@@ -123,40 +189,17 @@ export default async function Home() {
         >
           <h2 className="text-3xl font-extrabold tracking-tight">Venue</h2>
           <p className="max-w-2xl text-white/80">
-            Sri Nivasa Reddy Layout, AECS Layout, Marathahalli, Bengaluru,
-            Karnataka 560037
+            CMR Institute of Technology, Sri Nivasa Reddy Layout, AECS Layout,
+            Marathahalli, Bengaluru, Karnataka 560037
           </p>
           <a
             href="https://maps.app.goo.gl/UmQ5euVyrEhyXshT6"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 rounded-full bg-[hsl(280,100%,70%)] px-8 py-3 font-semibold text-black transition hover:bg-[hsl(280,100%,65%)]"
+            className="mt-2 rounded-full bg-[hsl(280,100%,70%)] px-8 py-3 font-semibold text-black transition hover:bg-[hsl(280,100%,65%)] [text-shadow:none]"
           >
             Open in Google Maps
           </a>
-        </section>
-
-        <section id="timeline" className="px-6 py-16">
-          <h2 className="mb-8 text-center text-3xl font-extrabold tracking-tight">
-            Timeline
-          </h2>
-          {TIMELINE.length === 0 ? (
-            <p className="text-center text-white/60">
-              Timeline coming soon — check back for dates.
-            </p>
-          ) : (
-            <div className="mx-auto flex max-w-2xl flex-col gap-4 border-l-2 border-white/20 pl-6">
-              {TIMELINE.map((event, i) => (
-                <div key={i} className="relative">
-                  <span className="absolute top-1.5 -left-[1.9rem] h-3 w-3 rounded-full bg-[hsl(280,100%,70%)]" />
-                  <p className="text-sm font-semibold text-white/60">
-                    {event.date}
-                  </p>
-                  <p className="text-lg">{event.label}</p>
-                </div>
-              ))}
-            </div>
-          )}
         </section>
 
         <section id="announcements" className="px-6 py-16">
@@ -205,7 +248,7 @@ export default async function Home() {
               href={env.NEXT_PUBLIC_DISCORD_INVITE_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full bg-[hsl(280,100%,70%)] px-8 py-3 font-semibold text-black transition hover:bg-[hsl(280,100%,65%)]"
+              className="rounded-full bg-[hsl(280,100%,70%)] px-8 py-3 font-semibold text-black transition hover:bg-[hsl(280,100%,65%)] [text-shadow:none]"
             >
               Join our Discord server
             </a>
@@ -244,30 +287,6 @@ export default async function Home() {
             </div>
           )}
         </section>
-
-        <footer className="flex flex-wrap items-center justify-center gap-10 border-t border-white/10 bg-[#3a1076] px-6 py-8">
-          <Image
-            src="/ieee-bangalore-section.png"
-            alt="IEEE Bangalore Section"
-            width={339}
-            height={71}
-            className="h-10 w-auto invert"
-          />
-          <Image
-            src="/ieee-sps-bangalore-chapter.png"
-            alt="IEEE Signal Processing Society — Bangalore Chapter"
-            width={246}
-            height={249}
-            className="h-16 w-auto invert"
-          />
-          <Image
-            src="/images-white.png"
-            alt="CMR Institute of Technology"
-            width={2394}
-            height={1034}
-            className="h-16 w-auto"
-          />
-        </footer>
       </main>
     </>
   );

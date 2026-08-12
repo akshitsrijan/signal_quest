@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { BootSequence } from "~/app/_components/boot-sequence";
 
 export const metadata: Metadata = {
   title: "SIGNAL QUEST",
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geist.variable}`}>
       <body>
+        <BootSequence />
         <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>

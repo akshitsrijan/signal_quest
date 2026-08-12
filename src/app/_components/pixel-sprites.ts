@@ -83,6 +83,24 @@ export function drawBinaryGlyph(
   ctx.globalAlpha = 1;
 }
 
+// A neon-lit pixel — for the indicator LEDs and glowing eyes that give the
+// sprites their arcade-cabinet CRT glow.
+function glowPx(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  color: string,
+  blur = 5,
+) {
+  ctx.save();
+  ctx.shadowColor = color;
+  ctx.shadowBlur = blur;
+  px(ctx, x, y, w, h, color);
+  ctx.restore();
+}
+
 function drawFloppy(ctx: CanvasRenderingContext2D, cx: number, cy: number, s: number) {
   const w = 10 * s;
   const h = 10 * s;
@@ -107,7 +125,7 @@ function drawCRT(
   const y = cy - h / 2;
   px(ctx, x, y, w, h, "#c9c9d1");
   px(ctx, x + 2 * s, y + 2 * s, w - 4 * s, h - 6 * s, "#0a0a0a");
-  if (blink) px(ctx, x + 3 * s, y + h - 6 * s, s, s, "#33ff66");
+  if (blink) glowPx(ctx, x + 3 * s, y + h - 6 * s, s, s, "#33ff66");
   px(ctx, x + w / 2 - 2 * s, y + h - 3 * s, 4 * s, 3 * s, "#9a9aa5");
 }
 
@@ -143,7 +161,7 @@ function drawChip(ctx: CanvasRenderingContext2D, cx: number, cy: number, s: numb
   const x = cx - w / 2;
   const y = cy - h / 2;
   px(ctx, x, y, w, h, "#111116");
-  px(ctx, x + s, y + s, s, s, "#ff3355");
+  glowPx(ctx, x + s, y + s, s, s, "#ff3355", 4);
   for (let i = 0; i < 3; i++) {
     px(ctx, x - s, y + (1 + i * 2) * s, s, s, "#c9c9d1");
     px(ctx, x + w, y + (1 + i * 2) * s, s, s, "#c9c9d1");
@@ -168,8 +186,8 @@ function drawRobot(
   const xh = cx - headW / 2;
   const yh = yBody - headH;
   px(ctx, xh, yh, headW, headH, "#9aa0ad");
-  px(ctx, xh + s, yh + s, s, s, "#33aaff");
-  px(ctx, xh + headW - 2 * s, yh + s, s, s, "#33aaff");
+  glowPx(ctx, xh + s, yh + s, s, s, "#33aaff", 3);
+  glowPx(ctx, xh + headW - 2 * s, yh + s, s, s, "#33aaff", 3);
   px(ctx, x, yBody, bodyW, bodyH, "#7f8592");
   px(ctx, x - 2 * s, yBody + 2 * s, 2 * s, 3 * s, "#7f8592");
   if (wave) {
@@ -197,7 +215,7 @@ function drawSatellite(
   px(ctx, x + bodyW + 2 * s, y + s, s, 3 * s, "#274b7a");
   px(ctx, x, y, bodyW, bodyH, "#b7bcc9");
   px(ctx, x + bodyW / 2 - s + dishOffset * s, y - 3 * s, 2 * s, 2 * s, "#e2e2e6");
-  if (blink) px(ctx, x + bodyW - s, y + bodyH - s, s, s, "#ff3355");
+  if (blink) glowPx(ctx, x + bodyW - s, y + bodyH - s, s, s, "#ff3355");
 }
 
 function drawPi(
@@ -217,7 +235,7 @@ function drawPi(
   for (let i = 0; i < 6; i++) {
     px(ctx, x + s + i * s, y - s, s * 0.7, s, "#c9c9c9");
   }
-  if (blink) px(ctx, x + w - 2 * s, y + h - 2 * s, s, s, "#33ff66");
+  if (blink) glowPx(ctx, x + w - 2 * s, y + h - 2 * s, s, s, "#33ff66");
 }
 
 function drawTeddy(ctx: CanvasRenderingContext2D, cx: number, cy: number, s: number) {
@@ -249,10 +267,81 @@ function drawTape(
   }
 }
 
-export function drawAsteroid(ctx: CanvasRenderingContext2D, cx: number, cy: number, s: number) {
+export function drawAsteroid(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  s: number,
+  time = 0,
+  phase = 0,
+) {
   pixelCircle(ctx, cx, cy, 4 * s, s, "#5a5a63", true);
-  px(ctx, cx - s, cy - s, s, s, "#3a3a42");
-  px(ctx, cx + 2 * s, cy + s, s, s, "#3a3a42");
+  // Two shadow flecks orbit the center slowly, reading as a tumbling rock
+  // rather than a rock with a fixed shading pattern.
+  const angle = time * 0.0004 + phase;
+  const r = 2 * s;
+  const x1 = cx + Math.cos(angle) * r;
+  const y1 = cy + Math.sin(angle) * r;
+  const x2 = cx + Math.cos(angle + Math.PI) * r;
+  const y2 = cy + Math.sin(angle + Math.PI) * r;
+  px(ctx, x1 - s / 2, y1 - s / 2, s, s, "#3a3a42");
+  px(ctx, x2 - s / 2, y2 - s / 2, s, s, "#3a3a42");
+}
+
+// Lightens (amount > 0) or darkens (amount < 0) a "#rrggbb" color.
+function shade(hex: string, amount: number): string {
+  const num = parseInt(hex.slice(1), 16);
+  const target = amount > 0 ? 255 : 0;
+  const mix = (c: number) => Math.round(c + (target - c) * Math.abs(amount));
+  return `rgb(${mix((num >> 16) & 0xff)},${mix((num >> 8) & 0xff)},${mix(num & 0xff)})`;
+}
+
+// A filled sphere with a lit side and a shadow side, so it reads as a ball
+// instead of a flat-color disc.
+function drawShadedSphere(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  r: number,
+  unit: number,
+  color: string,
+) {
+  const shadow = shade(color, -0.3);
+  const highlight = shade(color, 0.25);
+  for (let y = -r; y <= r; y += unit) {
+    for (let x = -r; x <= r; x += unit) {
+      if (Math.sqrt(x * x + y * y) > r) continue;
+      const lit = x + y;
+      const c = lit > r * 0.15 ? shadow : lit < -r * 0.6 ? highlight : color;
+      px(ctx, cx + x, cy + y, unit, unit, c);
+    }
+  }
+}
+
+// Half of a tilted ring ellipse — "front" is the near arc that passes in
+// front of the sphere, "back" is the far arc that passes behind it. Drawing
+// back-then-sphere-then-front is what sells the Saturn-style depth.
+function drawRingArc(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  cy: number,
+  rx: number,
+  ry: number,
+  unit: number,
+  color: string,
+  front: boolean,
+) {
+  const tilt = -0.35;
+  const steps = 32;
+  for (let i = 0; i < steps; i++) {
+    const theta = (i / steps) * Math.PI * 2;
+    const ex = Math.cos(theta) * rx;
+    const ey = Math.sin(theta) * ry;
+    const y = ex * Math.sin(tilt) + ey * Math.cos(tilt);
+    if (front ? y < 0 : y >= 0) continue;
+    const x = ex * Math.cos(tilt) - ey * Math.sin(tilt);
+    px(ctx, cx + x, cy + y, unit, unit, color);
+  }
 }
 
 export function drawPlanet(
@@ -263,8 +352,12 @@ export function drawPlanet(
   color: string,
   ringColor: string,
 ) {
-  px(ctx, cx - 9 * s, cy - s, 18 * s, s, ringColor);
-  pixelCircle(ctx, cx, cy, 6 * s, s, color, true);
+  const bodyR = 6 * s;
+  const ringRx = 11 * s;
+  const ringRy = 3.5 * s;
+  drawRingArc(ctx, cx, cy, ringRx, ringRy, s, ringColor, false);
+  drawShadedSphere(ctx, cx, cy, bodyR, s, color);
+  drawRingArc(ctx, cx, cy, ringRx, ringRy, s, ringColor, true);
 }
 
 export function drawEgg(
