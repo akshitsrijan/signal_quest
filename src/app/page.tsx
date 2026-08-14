@@ -27,7 +27,7 @@ const CO_ORGANIZER_LOGOS = [
     className: "h-16 w-auto",
   },
   {
-    src: "/CMRIT.png",
+    src: "/CMRIT_NEW_A++.png",
     alt: "CMR Institute of Technology, Bengaluru",
     width: 375,
     height: 246,
