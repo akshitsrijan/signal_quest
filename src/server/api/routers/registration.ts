@@ -26,8 +26,6 @@ export const registrationRouter = createTRPCRouter({
         teamLeaderPhone: z.string().min(1),
         collegeName: z.string().min(1),
         participantNames: z.array(z.string().min(1)).max(3),
-        ieeeMember: z.boolean(),
-        ieeeMembershipId: z.string().min(1).optional(),
         theme: z.enum(themeIds),
       }),
     )
@@ -55,6 +53,7 @@ export const registrationRouter = createTRPCRouter({
         numParticipants: input.participantNames.length,
         entryFee: 0,
         paymentProofUrl: "",
+        ieeeMember: false,
         email,
         userId: ctx.session.user.id,
         status: "PENDING" as const,

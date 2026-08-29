@@ -36,8 +36,6 @@ type RegistrationDraft = {
   teamLeaderPhone: string;
   collegeName: string;
   participantNames: string[];
-  ieeeMember: boolean;
-  ieeeMembershipId: string | null;
   theme: Theme | null;
 };
 
@@ -55,12 +53,6 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
   const [theme, setTheme] = useState<Theme | "">(initial?.theme ?? "");
   const [participantNames, setParticipantNames] = useState<string[]>(
     initial?.participantNames ?? [],
-  );
-  const [ieeeMember, setIeeeMember] = useState<"yes" | "no" | "">(
-    initial ? (initial.ieeeMember ? "yes" : "no") : "",
-  );
-  const [ieeeMembershipId, setIeeeMembershipId] = useState(
-    initial?.ieeeMembershipId ?? "",
   );
   const register = api.registration.create.useMutation({
     onSuccess: () => router.refresh(),
@@ -91,7 +83,7 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
       className="flex w-full max-w-2xl flex-col gap-4"
       onSubmit={(e) => {
         e.preventDefault();
-        if (ieeeMember === "" || theme === "") return;
+        if (theme === "") return;
         register.mutate({
           teamName,
           teamLeaderName,
@@ -100,9 +92,6 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
           participantNames: participantNames
             .map((name) => name.trim())
             .filter(Boolean),
-          ieeeMember: ieeeMember === "yes",
-          ieeeMembershipId:
-            ieeeMember === "yes" ? ieeeMembershipId || undefined : undefined,
           theme,
         });
       }}
@@ -199,40 +188,6 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
               />
             ))}
           </div>
-        </Question>
-      )}
-
-      <Question label="Are you an IEEE member?" required>
-        <div className="flex gap-6">
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="ieee"
-              checked={ieeeMember === "yes"}
-              onChange={() => setIeeeMember("yes")}
-              required
-            />
-            Yes
-          </label>
-          <label className="flex items-center gap-2">
-            <input
-              type="radio"
-              name="ieee"
-              checked={ieeeMember === "no"}
-              onChange={() => setIeeeMember("no")}
-            />
-            No
-          </label>
-        </div>
-      </Question>
-
-      {ieeeMember === "yes" && (
-        <Question label="IEEE membership ID">
-          <input
-            className={fieldClass}
-            value={ieeeMembershipId}
-            onChange={(e) => setIeeeMembershipId(e.target.value)}
-          />
         </Question>
       )}
 
