@@ -9,4 +9,3 @@ export const CONTACTS: Contact[] = [
   { name: "Haneesha", phone: "+91-9036223156" },
   { name: "Vanshika", phone: "+91-9341265034" },
 ];
-1
