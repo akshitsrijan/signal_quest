@@ -29,7 +29,6 @@ export const registrationRouter = createTRPCRouter({
         ieeeMember: z.boolean(),
         ieeeMembershipId: z.string().min(1).optional(),
         theme: z.enum(themeIds),
-        paymentProofUrl: z.string().url(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -54,7 +53,8 @@ export const registrationRouter = createTRPCRouter({
       const data = {
         ...input,
         numParticipants: input.participantNames.length,
-        entryFee: input.ieeeMember ? 400 : 500,
+        entryFee: 0,
+        paymentProofUrl: "",
         email,
         userId: ctx.session.user.id,
         status: "PENDING" as const,

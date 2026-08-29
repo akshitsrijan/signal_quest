@@ -55,31 +55,8 @@ export default async function RegisterPage() {
           <div className="w-full max-w-2xl rounded-xl bg-white/10 p-8 text-center">
             <h2 className="text-2xl font-bold">Registration Details</h2>
             <p className="mt-2 text-white/80">
-              Pay the entry fee via bank transfer, then paste a link to your
-              payment screenshot in the form below.
+              Registration is free — just fill out the form below.
             </p>
-          
-            <div className="mt-4 space-y-1 text-lg font-semibold">
-              <p>
-                Account Name:{" "}
-                <span className="text-[hsl(280,100%,70%)]">
-                   IEEE CMRIT SB
-                </span>
-              </p>
-              <p>
-                Account Number:{" "}
-                <span className="text-[hsl(280,100%,70%)]">
-                  843410110012833
-                </span>
-              </p>
-              <p>
-                IFSC Code:{" "}
-                <span className="text-[hsl(280,100%,70%)]">
-                  BKID0008434
-                </span>
-              </p>
-            </div>
-         
           </div>
 
           <RegistrationForm initial={registration ?? undefined} />

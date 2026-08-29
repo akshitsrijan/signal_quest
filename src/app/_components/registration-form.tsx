@@ -39,7 +39,6 @@ type RegistrationDraft = {
   ieeeMember: boolean;
   ieeeMembershipId: string | null;
   theme: Theme | null;
-  paymentProofUrl: string;
 };
 
 export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
@@ -63,10 +62,6 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
   const [ieeeMembershipId, setIeeeMembershipId] = useState(
     initial?.ieeeMembershipId ?? "",
   );
-  const [paymentProofUrl, setPaymentProofUrl] = useState(
-    initial?.paymentProofUrl ?? "",
-  );
-
   const register = api.registration.create.useMutation({
     onSuccess: () => router.refresh(),
   });
@@ -109,7 +104,6 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
           ieeeMembershipId:
             ieeeMember === "yes" ? ieeeMembershipId || undefined : undefined,
           theme,
-          paymentProofUrl,
         });
       }}
     >
@@ -241,26 +235,6 @@ export function RegistrationForm({ initial }: { initial?: RegistrationDraft }) {
           />
         </Question>
       )}
-
-      {ieeeMember !== "" && (
-        <Question label="Entry fee">
-          <p className="text-white/80">
-            ₹{ieeeMember === "yes" ? 400 : 500} (fixed
-            {ieeeMember === "yes" ? " for IEEE members" : " for non-IEEE members"})
-          </p>
-        </Question>
-      )}
-
-      <Question label="Payment proof link" required>
-        <input
-          className={fieldClass}
-          type="url"
-          placeholder="Link to a screenshot (Google Drive, Imgur, etc.)"
-          value={paymentProofUrl}
-          onChange={(e) => setPaymentProofUrl(e.target.value)}
-          required
-        />
-      </Question>
 
       {register.error && (
         <p className="text-sm text-red-400">{register.error.message}</p>

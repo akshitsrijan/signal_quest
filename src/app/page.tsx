@@ -147,8 +147,8 @@ export default async function Home() {
             ₹14,000
           </p>
           <p className="max-w-2xl text-white/80">
-            ₹14,000 plus goodies — up for grabs across all themes at SIGNAL
-            QUEST.
+            Goodies worth 14,000 rupees — up for grabs across all themes at
+            SIGNAL QUEST.
           </p>
         </section>
 

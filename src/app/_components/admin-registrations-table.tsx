@@ -14,6 +14,7 @@ const TABS = [
   { key: "APPROVED", label: "Approved" },
   { key: "REJECTED", label: "Rejected" },
   { key: "ON_HOLD", label: "On hold" },
+  { key: "PAID", label: "Already paid (needs refund)" },
 ] as const;
 
 type TabKey = (typeof TABS)[number]["key"];
@@ -28,7 +29,9 @@ export function AdminRegistrationsTable({
   const filtered =
     tab === "ALL"
       ? registrations
-      : registrations.filter((registration) => registration.status === tab);
+      : tab === "PAID"
+        ? registrations.filter((registration) => registration.paymentProofUrl)
+        : registrations.filter((registration) => registration.status === tab);
 
   return (
     <div>
@@ -37,9 +40,13 @@ export function AdminRegistrationsTable({
           const count =
             t.key === "ALL"
               ? registrations.length
-              : registrations.filter(
-                  (registration) => registration.status === t.key,
-                ).length;
+              : t.key === "PAID"
+                ? registrations.filter(
+                    (registration) => registration.paymentProofUrl,
+                  ).length
+                : registrations.filter(
+                    (registration) => registration.status === t.key,
+                  ).length;
           return (
             <button
               key={t.key}
@@ -110,14 +117,18 @@ export function AdminRegistrationsTable({
                   </td>
                   <td className="px-4 py-3">₹{registration.entryFee}</td>
                   <td className="px-4 py-3">
-                    <a
-                      href={registration.paymentProofUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="underline hover:text-white/70"
-                    >
-                      View
-                    </a>
+                    {registration.paymentProofUrl ? (
+                      <a
+                        href={registration.paymentProofUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline hover:text-white/70"
+                      >
+                        View
+                      </a>
+                    ) : (
+                      "—"
+                    )}
                   </td>
                   <td className="px-4 py-3">{registration.status}</td>
                   <td className="px-4 py-3">
