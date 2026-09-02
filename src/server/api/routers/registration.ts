@@ -5,8 +5,10 @@ import {
   adminProcedure,
   createTRPCRouter,
   protectedProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
 import { THEMES, type Theme } from "~/lib/themes";
+import { COUNTED_STATUSES, MAX_TEAMS } from "~/lib/registration-limits";
 
 const themeIds = THEMES.map((theme) => theme.id) as [Theme, ...Theme[]];
 
@@ -16,6 +18,13 @@ export const registrationRouter = createTRPCRouter({
     return ctx.db.registration.findUnique({
       where: { email: ctx.session.user.email },
     });
+  }),
+
+  count: publicProcedure.query(async ({ ctx }) => {
+    const registered = await ctx.db.registration.count({
+      where: { status: { in: COUNTED_STATUSES } },
+    });
+    return { registered, max: MAX_TEAMS };
   }),
 
   create: protectedProcedure
@@ -46,6 +55,20 @@ export const registrationRouter = createTRPCRouter({
           code: "CONFLICT",
           message: "You've already registered a team for SIGNAL QUEST.",
         });
+      }
+
+      // Only new slots need the cap check — a rejected registration being
+      // resubmitted is reusing a slot it never counted for.
+      if (!existing) {
+        const registeredCount = await ctx.db.registration.count({
+          where: { status: { in: COUNTED_STATUSES } },
+        });
+        if (registeredCount >= MAX_TEAMS) {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: `Registrations are closed — all ${MAX_TEAMS} team slots have been filled.`,
+          });
+        }
       }
 
       const data = {

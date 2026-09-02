@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import { RegistrationForm } from "~/app/_components/registration-form";
+import { RegistrationTracker } from "~/app/_components/registration-tracker";
 import { REGISTRATION_STATUS_COPY } from "~/lib/registration-status";
 import { isAdminEmail } from "~/lib/admin";
 
@@ -29,6 +30,8 @@ export default async function RegisterPage() {
   }
 
   const registration = await api.registration.mine();
+  const registrationCount = await api.registration.count();
+  const isFull = registrationCount.registered >= registrationCount.max;
 
   return (
     <main className="flex min-h-screen flex-col items-center gap-8 bg-gradient-to-b from-[#2e026d] to-[#15162c] px-4 py-16 text-white">
@@ -36,11 +39,24 @@ export default async function RegisterPage() {
         Team <span className="text-[hsl(280,100%,70%)]">Registration</span>
       </h1>
 
+      <RegistrationTracker
+        registered={registrationCount.registered}
+        max={registrationCount.max}
+      />
+
       {registration && registration.status !== "REJECTED" ? (
         <div className="w-full max-w-2xl rounded-xl bg-white/10 p-8 text-center">
           <h2 className="text-2xl font-bold">{registration.teamName}</h2>
           <p className="mt-2 text-white/80">
             {REGISTRATION_STATUS_COPY[registration.status]}
+          </p>
+        </div>
+      ) : isFull && !registration ? (
+        <div className="w-full max-w-2xl rounded-xl bg-white/10 p-8 text-center">
+          <h2 className="text-2xl font-bold">Registrations are closed</h2>
+          <p className="mt-2 text-white/80">
+            All {registrationCount.max} team slots have been filled. Thanks
+            for your interest in SIGNAL QUEST!
           </p>
         </div>
       ) : (
