@@ -1,6 +1,7 @@
 "use client";
 
 import { api } from "~/trpc/react";
+import { REGISTRATION_CLOSED } from "~/lib/registration-limits";
 
 export function RegistrationTracker({
   registered: initialRegistered,
@@ -17,7 +18,7 @@ export function RegistrationTracker({
 
   const { registered, max } = data;
   const remaining = Math.max(0, max - registered);
-  const full = remaining === 0;
+  const full = REGISTRATION_CLOSED || remaining === 0;
 
   return (
     <div className="mx-auto w-full max-w-md rounded-xl bg-white/10 px-6 py-4 text-center">
@@ -25,9 +26,11 @@ export function RegistrationTracker({
         {registered} / {max} teams registered
       </p>
       <p className="mt-1 text-sm text-white/70">
-        {full
-          ? "Registrations are closed — all slots are filled."
-          : `${remaining} ${remaining === 1 ? "slot" : "slots"} left`}
+        {REGISTRATION_CLOSED
+          ? "Registrations are closed."
+          : full
+            ? "Registrations are closed — all slots are filled."
+            : `${remaining} ${remaining === 1 ? "slot" : "slots"} left`}
       </p>
     </div>
   );

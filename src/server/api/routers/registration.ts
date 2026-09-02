@@ -8,7 +8,11 @@ import {
   publicProcedure,
 } from "~/server/api/trpc";
 import { THEMES, type Theme } from "~/lib/themes";
-import { COUNTED_STATUSES, MAX_TEAMS } from "~/lib/registration-limits";
+import {
+  COUNTED_STATUSES,
+  MAX_TEAMS,
+  REGISTRATION_CLOSED,
+} from "~/lib/registration-limits";
 
 const themeIds = THEMES.map((theme) => theme.id) as [Theme, ...Theme[]];
 
@@ -39,6 +43,13 @@ export const registrationRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      if (REGISTRATION_CLOSED) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Registrations are closed for SIGNAL QUEST.",
+        });
+      }
+
       const email = ctx.session.user.email;
       if (!email) {
         throw new TRPCError({
