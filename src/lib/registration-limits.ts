@@ -1,4 +1,4 @@
-export const MAX_TEAMS = 40;
+export const MAX_TEAMS = 41;
 
 // Only approved teams hold a confirmed slot — pending/on-hold/rejected
 // registrations aren't counted against the cap.
