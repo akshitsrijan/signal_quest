@@ -5,7 +5,6 @@ import { api } from "~/trpc/server";
 import { auth } from "~/server/auth";
 import { SiteNav } from "~/app/_components/site-nav";
 import { StarfieldBackground } from "~/app/_components/starfield-background";
-import { RegistrationTracker } from "~/app/_components/registration-tracker";
 import { THEMES } from "~/lib/themes";
 import { REGISTRATION_STATUS_COPY } from "~/lib/registration-status";
 import { isAdminEmail } from "~/lib/admin";
@@ -61,7 +60,6 @@ function CoOrganizerLogo({
 export default async function Home() {
   const session = await auth();
   const announcements = await api.announcement.list();
-  const registrationCount = await api.registration.count();
   const isAdmin = await isAdminEmail(session?.user.email);
   const myRegistration =
     session && !isAdmin ? await api.registration.mine() : null;
@@ -71,13 +69,6 @@ export default async function Home() {
       <StarfieldBackground />
       <main className="text-over-starfield relative z-0 min-h-screen text-white">
         <SiteNav isSignedIn={!!session} isAdmin={isAdmin} />
-
-        <div className="px-6 pt-6">
-          <RegistrationTracker
-            registered={registrationCount.registered}
-            max={registrationCount.max}
-          />
-        </div>
 
         {session && !isAdmin && (
           <div className="px-6 pt-4">

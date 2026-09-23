@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { auth } from "~/server/auth";
 import { api } from "~/trpc/server";
 import { RegistrationForm } from "~/app/_components/registration-form";
-import { RegistrationTracker } from "~/app/_components/registration-tracker";
 import { REGISTRATION_STATUS_COPY } from "~/lib/registration-status";
 import { REGISTRATION_CLOSED } from "~/lib/registration-limits";
 import { isAdminEmail } from "~/lib/admin";
@@ -41,11 +40,6 @@ export default async function RegisterPage() {
       <h1 className="text-center text-4xl font-extrabold tracking-tight">
         Team <span className="text-[hsl(280,100%,70%)]">Registration</span>
       </h1>
-
-      <RegistrationTracker
-        registered={registrationCount.registered}
-        max={registrationCount.max}
-      />
 
       {registration && registration.status !== "REJECTED" ? (
         <div className="w-full max-w-2xl rounded-xl bg-white/10 p-8 text-center">
